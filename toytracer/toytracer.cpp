@@ -8,10 +8,9 @@
 
 #include <iostream>
 #include <fstream>
-#include <thread>
 #include <vector>
-#include <ctime>
-#include <future>
+#include <chrono>
+#include <limits>
 
 #include "omp.h"
 #include "sphere.h"
@@ -24,6 +23,19 @@
 #include "transformation.h"
 
 using namespace std;
+
+struct ImageTile {
+    const int start_x;
+    const int start_y;
+    const int end_x;
+    const int end_y;
+    const int nx;
+    const int ny;
+    
+    std::vector<Vec3f>& buff;
+    
+    ImageTile(int x0, int x1, int y0, int y1, int nx, int ny, std::vector<Vec3f>& buff): start_x(x0), end_x(x1), start_y(y0), end_y(y1), nx(nx), ny(ny), buff(buff) {}
+};
 
 Hitable* CornellBox() {
     Hitable** list = new Hitable*[8];
@@ -44,39 +56,46 @@ Hitable* CornellBox() {
     return new BVHNode(list, 8, 0, 0);
 }
 
-Vec3f Color(const Ray& R, Hitable* world, int depth) {
+Vec3f Sample(const Ray& R, Hitable* world, int depth) {
     HitRecord rec;
     if (world->Hit(R, 0.001, MAXFLOAT, rec)) {
         Ray Scattered;
         Vec3f Attentuation;
         Vec3f Emitted = rec.mat_ptr->Emitted(rec.u, rec.v, rec.P);
         if (depth < 50 and rec.mat_ptr->Scatter(R, rec, Attentuation, Scattered)) {
-            return Emitted + Attentuation * Color(Scattered, world, depth + 1);
+            return Emitted + Attentuation * Sample(Scattered, world, depth + 1);
         }
         return Emitted;
     }
     return Vec3f(0, 0, 0);
 }
 
-Vec3f Sample(int x, int y, int nx, int ny, int ns, Camera& cam, Hitable* world) {
+Vec3f RenderPixel(int x, int y, int nx, int ny, int ns, Camera& cam, Hitable* world) {
     Vec3f col;
     for (int s = 0; s < ns; ++s) {
         double u = double(x + drand48()) / double(nx);
         double v = double(y + drand48()) / double(ny);
         Ray R = cam.GetRay(u, v);
-        col += Color(R, world, 0);
+        col += Sample(R, world, 0);
     }
     col /= ns;
     return Vec3f(sqrt(col.x), sqrt(col.y), sqrt(col.z));
 }
 
-int main(int argc, const char** argv) {
-    time_t begin = time(0);
-    cout << "Building scene...\n";
-    
+void RenderTile(ImageTile& a, Camera& cam, Hitable* world, int ns) {
+    for (int row = a.start_y; row <= a.end_y; ++row) {
+        for (int col = a.start_x; col <= a.end_x; ++col) {
+            int index = a.nx * (a.ny - row - 1) + col;
+            a.buff[index] = RenderPixel(col, row, a.nx, a.ny, ns, cam, world);
+        }
+    }
+}
+
+int main(int argc, const char* argv[]) {
     int nx = 800;
     int ny = 800;
     int ns = 10;
+    int tile_size = 32;
     
     Vec3f LookFrom(278, 278, -800);
     Vec3f LookAt(278, 278, 0);
@@ -91,24 +110,56 @@ int main(int argc, const char** argv) {
     Camera cam(LookFrom, LookAt, Vup, vfov, aspect, aperture, dist_to_focus, start_time, end_time);
     Hitable* world = CornellBox();
     
-    time_t scene_time = time(0);
-    cout << "Finished building scene: " << double(scene_time - begin) << " secs\n";
+    /**
+     * Divide the image into tiles for rendering
+     */
+    cout << "Starting setup:\n";
+    auto setup_start = chrono::high_resolution_clock::now();
     
     int buff_size = nx * ny;
     vector<Vec3f> buffer(buff_size);
+    vector<ImageTile> tiles;
     
+    int tiles_wide = ceil(double(nx) / double(tile_size));
+    int tiles_tall = ceil(double(ny) / double(tile_size));
+    
+    for (int j = 0; j < tiles_tall; ++j) {
+        for (int i = 0; i < tiles_wide; ++i) {
+            int start_x = i * tile_size;
+            int start_y = j * tile_size;
+            int end_x = start_x + tile_size - 1;
+            int end_y = start_y + tile_size - 1;
+            
+            if (end_x >= nx) {
+                end_x = nx - 1;
+            }
+            
+            if (end_y >= ny) {
+                end_y = ny - 1;
+            }
+            
+            ImageTile s(start_x, end_x, start_y, end_y, nx, ny, buffer);
+            tiles.push_back(s);
+        }
+    }
+    
+    auto setup_end = chrono::high_resolution_clock::now();
+    cout << "Setup complete: " << std::chrono::duration_cast<chrono::milliseconds>(setup_end-setup_start).count() << " ms\n";
+    
+    /**
+     * Render the tiles in parallel
+     */
     cout << "Starting render:\n";
-    time_t start_render = time(0);
+    
+    auto render_start = chrono::high_resolution_clock::now();
     
     #pragma omp parallel for
-    for (int i = 0; i < buff_size; ++i) {
-        int col = i % nx;
-        int row = ny - (i / nx) - 1;
-        buffer[i] = Sample(col, row, nx, ny, ns, cam, world);
+    for (unsigned long i = 0; i < tiles.size(); ++i) {
+        RenderTile(tiles[i], cam, world, ns);
     }
-
-    time_t end_render = time(0);
-    cout << "Render time: " << double(end_render - start_render) << " secs\n";
+    
+    auto render_end = chrono::high_resolution_clock::now();
+    cout << "Render complete: " << std::chrono::duration_cast<chrono::seconds>(render_end-render_start).count() << " s\n";
     
     /**
      * Writing buffer to file
@@ -121,7 +172,5 @@ int main(int argc, const char** argv) {
     }
     myfile.close();
     
-    time_t end = time(0);
-    cout << "Total time: " << double(end - begin) << " secs\n";
     return 0;
 }
