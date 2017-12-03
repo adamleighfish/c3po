@@ -1,5 +1,6 @@
 ### macOS ###
 *.DS_Store
+*.gitignore~
 
 # Created by https://www.gitignore.io/api/xcode
 
