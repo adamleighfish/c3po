@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9A40BD371FAB9D4900DAF786 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A40BD361FAB9D4900DAF786 /* main.cpp */; };
+		9A40BD371FAB9D4900DAF786 /* toytracer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A40BD361FAB9D4900DAF786 /* toytracer.cpp */; };
+		9AAA6D131FD0DE85001F4851 /* libiomp5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AAA6D121FD0DE85001F4851 /* libiomp5.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,7 +25,22 @@
 
 /* Begin PBXFileReference section */
 		9A40BD331FAB9D4900DAF786 /* toytracer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = toytracer; sourceTree = BUILT_PRODUCTS_DIR; };
-		9A40BD361FAB9D4900DAF786 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		9A40BD361FAB9D4900DAF786 /* toytracer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = toytracer.cpp; sourceTree = "<group>"; };
+		9A40BD3D1FABA1F200DAF786 /* geometry.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = geometry.h; sourceTree = "<group>"; };
+		9A40BD3E1FAE136300DAF786 /* utility.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = utility.h; sourceTree = "<group>"; };
+		9A40BD3F1FAE2CE400DAF786 /* hitable.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = hitable.h; sourceTree = "<group>"; };
+		9A40BD401FAE2E4F00DAF786 /* sphere.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = sphere.h; sourceTree = "<group>"; };
+		9A6188411FAE4AFE00CF41EB /* camera.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = camera.h; sourceTree = "<group>"; };
+		9A6188421FAE50D600CF41EB /* material.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = material.h; sourceTree = "<group>"; };
+		9A6188431FAE588A00CF41EB /* aggregate.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = aggregate.h; sourceTree = "<group>"; };
+		9A6188441FB0D1A900CF41EB /* aabb.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = aabb.h; sourceTree = "<group>"; };
+		9A6188451FB0DBAF00CF41EB /* bvh.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = bvh.h; sourceTree = "<group>"; };
+		9A6188831FB282F400CF41EB /* texture.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = texture.h; sourceTree = "<group>"; };
+		9A6188841FB37EDA00CF41EB /* perlin.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = perlin.h; sourceTree = "<group>"; };
+		9A6188851FB4C8BF00CF41EB /* rectangle.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = rectangle.h; sourceTree = "<group>"; };
+		9A6188861FB4E4A100CF41EB /* box.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = box.h; sourceTree = "<group>"; };
+		9A6188871FB4F4B000CF41EB /* transformation.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = transformation.h; sourceTree = "<group>"; };
+		9AAA6D121FD0DE85001F4851 /* libiomp5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiomp5.dylib; path = ../../../../../usr/local/Cellar/llvm/5.0.0/lib/libiomp5.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +48,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9AAA6D131FD0DE85001F4851 /* libiomp5.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -43,6 +60,7 @@
 			children = (
 				9A40BD351FAB9D4900DAF786 /* toytracer */,
 				9A40BD341FAB9D4900DAF786 /* Products */,
+				9AAA6D111FD0DE85001F4851 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -57,9 +75,31 @@
 		9A40BD351FAB9D4900DAF786 /* toytracer */ = {
 			isa = PBXGroup;
 			children = (
-				9A40BD361FAB9D4900DAF786 /* main.cpp */,
+				9A40BD361FAB9D4900DAF786 /* toytracer.cpp */,
+				9A6188411FAE4AFE00CF41EB /* camera.h */,
+				9A40BD3D1FABA1F200DAF786 /* geometry.h */,
+				9A40BD3F1FAE2CE400DAF786 /* hitable.h */,
+				9A6188421FAE50D600CF41EB /* material.h */,
+				9A40BD401FAE2E4F00DAF786 /* sphere.h */,
+				9A40BD3E1FAE136300DAF786 /* utility.h */,
+				9A6188431FAE588A00CF41EB /* aggregate.h */,
+				9A6188441FB0D1A900CF41EB /* aabb.h */,
+				9A6188451FB0DBAF00CF41EB /* bvh.h */,
+				9A6188831FB282F400CF41EB /* texture.h */,
+				9A6188841FB37EDA00CF41EB /* perlin.h */,
+				9A6188851FB4C8BF00CF41EB /* rectangle.h */,
+				9A6188861FB4E4A100CF41EB /* box.h */,
+				9A6188871FB4F4B000CF41EB /* transformation.h */,
 			);
 			path = toytracer;
+			sourceTree = "<group>";
+		};
+		9AAA6D111FD0DE85001F4851 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9AAA6D121FD0DE85001F4851 /* libiomp5.dylib */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -119,7 +159,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9A40BD371FAB9D4900DAF786 /* main.cpp in Sources */,
+				9A40BD371FAB9D4900DAF786 /* toytracer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -232,16 +272,36 @@
 		9A40BD3B1FAB9D4900DAF786 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CC = /usr/local/opt/llvm/bin/clang;
+				CLANG_ENABLE_MODULES = NO;
 				CODE_SIGN_STYLE = Automatic;
+				COMPILER_INDEX_STORE_ENABLE = NO;
+				HEADER_SEARCH_PATHS = /usr/local/opt/llvm/lib/clang/5.0.0/include;
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/opt/llvm/lib,
+					/usr/local/Cellar/llvm/5.0.0/lib,
+				);
+				OTHER_CFLAGS = "-fopenmp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				nil = "";
 			};
 			name = Debug;
 		};
 		9A40BD3C1FAB9D4900DAF786 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CC = /usr/local/opt/llvm/bin/clang;
+				CLANG_ENABLE_MODULES = NO;
 				CODE_SIGN_STYLE = Automatic;
+				COMPILER_INDEX_STORE_ENABLE = NO;
+				HEADER_SEARCH_PATHS = /usr/local/opt/llvm/lib/clang/5.0.0/include;
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/opt/llvm/lib,
+					/usr/local/Cellar/llvm/5.0.0/lib,
+				);
+				OTHER_CFLAGS = "-fopenmp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				nil = "";
 			};
 			name = Release;
 		};
