@@ -35,8 +35,6 @@ xcuserdata/
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
 
-toytracer.xcodeproj/project.pbxproj
-
 # End of https://www.gitignore.io/api/xcode
 
 ### C ###
