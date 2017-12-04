@@ -1,6 +1,6 @@
 //
 //  material.h
-//  toytracer
+//  c3p0
 //
 //  Created by Adam Fish on 11/4/17.
 //  Copyright © 2017 Adam Fish. All rights reserved.
