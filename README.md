@@ -1,4 +1,4 @@
-# C3P0
+# C-3PO
 A physically-based C++ path tracer based off the path tracer outlined in Peter Shirley's In One Weekend series of books and Matt Pharr's Physically Based Rendering.
 
 ---
