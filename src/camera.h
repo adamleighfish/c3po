@@ -9,12 +9,19 @@
 #ifndef camera_h
 #define camera_h
 
+#include <numbers>
+#include <random>
+
 #include "geometry.h"
 
 Vec3f RandomInUnitDisk() {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(0.0, 1.0);
+
     Vec3f P;
     do {
-        P = 2.0 * Vec3f(drand48(), drand48(), 0) - Vec3f(1, 1, 0);
+        P = 2.0 * Vec3f(dis(gen), dis(gen), 0) - Vec3f(1, 1, 0);
     } while (Dot(P, P) >= 1.0);
     return P;
 }
@@ -28,29 +35,38 @@ public:
     Vec3f U, V, W;
     double lens_radius;
     double time0, time1;
-    
-    Camera(const Vec3f& LookFrom, const Vec3f& LookAt, const Vec3f& Vup, double vfov,
-           double aspect, double aperture, double focus_dist, double t0=0.0, double t1=0.0) {
+
+    Camera(Vec3f const& LookFrom, Vec3f const& LookAt, Vec3f const& Vup,
+           double vfov, double aspect, double aperture, double focus_dist,
+           double t0 = 0.0, double t1 = 0.0) {
         lens_radius = aperture / 2.0;
-        double theta = vfov * M_PI / 180;
+        double theta = vfov * std::numbers::pi / 180;
         double half_height = tan(theta / 2.0);
         double half_width = aspect * half_height;
         Origin = LookFrom;
         W = Normalize(LookFrom - LookAt);
         U = Normalize(Cross(Vup, W));
         V = Cross(W, U);
-        LowerLeftCorner = Origin - half_width * focus_dist * U - half_height * focus_dist * V - focus_dist * W;
+        LowerLeftCorner = Origin - half_width * focus_dist * U -
+                          half_height * focus_dist * V - focus_dist * W;
         Horizontal = 2 * half_width * focus_dist * U;
         Vertical = 2 * half_height * focus_dist * V;
         time0 = t0;
         time1 = t1;
     }
-    
+
     Ray GetRay(double s, double t) {
-        double time = time0 + drand48() * (time1 - time0);
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        std::uniform_real_distribution<> dis(0.0, 1.0);
+
+        double time = time0 + dis(gen) * (time1 - time0);
         Vec3f RD = lens_radius * RandomInUnitDisk();
         Vec3f Offset = U * RD.x + V * RD.y;
-        return Ray(Origin + Offset, LowerLeftCorner + s * Horizontal + t * Vertical - Origin - Offset, time);
+        return Ray(Origin + Offset,
+                   LowerLeftCorner + s * Horizontal + t * Vertical - Origin -
+                       Offset,
+                   time);
     }
 };
 

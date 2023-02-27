@@ -9,17 +9,20 @@
 #ifndef bvh_h
 #define bvh_h
 
-#include <iostream>
 #include <stdlib.h>
 
-#include "hitable.h"
-#include "aabb.h"
+#include <iostream>
+#include <random>
 
-int BoxCompareX(const void* a, const void* b) {
+#include "aabb.h"
+#include "hitable.h"
+
+int BoxCompareX(void const* a, void const* b) {
     AABB box_left, box_right;
     Hitable* a_hitable = *(Hitable**)a;
     Hitable* b_hitable = *(Hitable**)b;
-    if (!a_hitable->BoundingBox(0, 0, box_left) or !b_hitable->BoundingBox(0, 0, box_right)) {
+    if (!a_hitable->BoundingBox(0, 0, box_left) or
+        !b_hitable->BoundingBox(0, 0, box_right)) {
         std::cerr << "ERROR: could not find bounding box\n";
     }
     if (box_left.Min.x - box_right.Min.x < 0.0) {
@@ -28,11 +31,12 @@ int BoxCompareX(const void* a, const void* b) {
     return 1;
 }
 
-int BoxCompareY(const void* a, const void* b) {
+int BoxCompareY(void const* a, void const* b) {
     AABB box_left, box_right;
     Hitable* a_hitable = *(Hitable**)a;
     Hitable* b_hitable = *(Hitable**)b;
-    if (!a_hitable->BoundingBox(0, 0, box_left) or !b_hitable->BoundingBox(0, 0, box_right)) {
+    if (!a_hitable->BoundingBox(0, 0, box_left) or
+        !b_hitable->BoundingBox(0, 0, box_right)) {
         std::cerr << "ERROR: could not find bounding box\n";
     }
     if (box_left.Min.y - box_right.Min.y < 0.0) {
@@ -41,11 +45,12 @@ int BoxCompareY(const void* a, const void* b) {
     return 1;
 }
 
-int BoxCompareZ(const void* a, const void* b) {
+int BoxCompareZ(void const* a, void const* b) {
     AABB box_left, box_right;
     Hitable* a_hitable = *(Hitable**)a;
     Hitable* b_hitable = *(Hitable**)b;
-    if (!a_hitable->BoundingBox(0, 0, box_left) or !b_hitable->BoundingBox(0, 0, box_right)) {
+    if (!a_hitable->BoundingBox(0, 0, box_left) or
+        !b_hitable->BoundingBox(0, 0, box_right)) {
         std::cerr << "ERROR: could not find bounding box\n";
     }
     if (box_left.Min.z - box_right.Min.z < 0.0) {
@@ -54,22 +59,26 @@ int BoxCompareZ(const void* a, const void* b) {
     return 1;
 }
 
-class BVHNode: public Hitable {
+class BVHNode : public Hitable {
 public:
     Hitable* left;
     Hitable* right;
     AABB box;
-    
+
     BVHNode() {}
     BVHNode(Hitable** list, int n, double t0, double t1);
-    
-    virtual bool Hit(const Ray& R, double t_min, double t_max, HitRecord& rec) const;
+
+    virtual bool Hit(Ray const& R, double t_min, double t_max,
+                     HitRecord& rec) const;
     virtual bool BoundingBox(double t0, double t1, AABB& box) const;
 };
 
 BVHNode::BVHNode(Hitable** list, int n, double t0, double t1) {
-    int axis = int(drand48() * 3);
-    
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(1, 3);
+    int axis = int(dis(gen));
+
     if (axis == 0) {
         qsort(list, n, sizeof(Hitable*), BoxCompareX);
     } else if (axis == 1) {
@@ -77,30 +86,32 @@ BVHNode::BVHNode(Hitable** list, int n, double t0, double t1) {
     } else if (axis == 2) {
         qsort(list, n, sizeof(Hitable*), BoxCompareZ);
     }
-    
+
     if (n == 1) {
         left = right = list[0];
     } else if (n == 2) {
         left = list[0];
         right = list[1];
     } else {
-        left = new BVHNode(list, n/2, t0, t1);
-        right = new BVHNode(list + n/2, n - n/2, t0, t1);
+        left = new BVHNode(list, n / 2, t0, t1);
+        right = new BVHNode(list + n / 2, n - n / 2, t0, t1);
     }
-    
+
     AABB box_left, box_right;
-    if (!left->BoundingBox(t0, t1, box_left) or !right->BoundingBox(t0, t1, box_right)) {
+    if (!left->BoundingBox(t0, t1, box_left) or
+        !right->BoundingBox(t0, t1, box_right)) {
         std::cerr << "ERROR: could not find bounding box\n";
     }
     box = SurroundingBox(box_left, box_right);
 }
 
-bool BVHNode::Hit(const Ray& R, double t_min, double t_max, HitRecord& rec) const {
+bool BVHNode::Hit(Ray const& R, double t_min, double t_max,
+                  HitRecord& rec) const {
     if (box.Hit(R, t_min, t_max)) {
         HitRecord left_rec, right_rec;
         bool hit_left = left->Hit(R, t_min, t_max, left_rec);
         bool hit_right = right->Hit(R, t_min, t_max, right_rec);
-        
+
         if (hit_left and hit_right) {
             if (left_rec.t < right_rec.t) {
                 rec = left_rec;

@@ -14,11 +14,11 @@
 class AABB {
 public:
     Vec3f Min, Max;
-    
+
     AABB() {}
-    AABB(const Vec3f& Min, const Vec3f& Max): Min(Min), Max(Max) {}
-    
-    bool Hit(const Ray& R, double tmin, double tmax) const {
+    AABB(Vec3f const& Min, Vec3f const& Max) : Min(Min), Max(Max) {}
+
+    bool Hit(Ray const& R, double tmin, double tmax) const {
         for (int a = 0; a < 3; ++a) {
             double invD = 1.0 / R.D[a];
             double t0 = (Min[a] - R.O[a]) * invD;
@@ -26,8 +26,8 @@ public:
             if (invD < 0.0) {
                 std::swap(t0, t1);
             }
-            tmin = t0 > tmin ? t0: tmin;
-            tmax = t1 < tmax ? t1: tmax;
+            tmin = t0 > tmin ? t0 : tmin;
+            tmax = t1 < tmax ? t1 : tmax;
             if (tmax <= tmin) {
                 return false;
             }
