@@ -1,11 +1,3 @@
-//
-//  aabb.h
-//  c3p0
-//
-//  Created by Adam Fish on 11/6/17.
-//  Copyright © 2017 Adam Fish. All rights reserved.
-//
-
 #ifndef aabb_h
 #define aabb_h
 
@@ -46,4 +38,4 @@ AABB SurroundingBox(const AABB& box0, const AABB& box1) {
     return AABB(Small, Big);
 }
 
-#endif /* aabb_h */
+#endif

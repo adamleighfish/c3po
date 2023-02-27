@@ -1,11 +1,3 @@
-//
-//  hitable.h
-//  c3p0
-//
-//  Created by Adam Fish on 11/4/17.
-//  Copyright © 2017 Adam Fish. All rights reserved.
-//
-
 #ifndef hitable_h
 #define hitable_h
 
@@ -59,4 +51,4 @@ public:
     }
 };
 
-#endif /* hitable_h */
+#endif

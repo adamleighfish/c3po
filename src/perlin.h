@@ -1,11 +1,3 @@
-//
-//  perlin.h
-//  c3p0
-//
-//  Created by Adam Fish on 11/8/17.
-//  Copyright © 2017 Adam Fish. All rights reserved.
-//
-
 #ifndef perlin_h
 #define perlin_h
 
@@ -112,4 +104,4 @@ int* Perlin::perm_y = PerlinGeneratePerm();
 int* Perlin::perm_z = PerlinGeneratePerm();
 Vec3f* Perlin::ranvec = PerlinGenerate();
 
-#endif /* perlin_h */
+#endif

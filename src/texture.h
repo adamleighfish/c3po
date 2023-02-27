@@ -1,11 +1,3 @@
-//
-//  texture.h
-//  c3p0
-//
-//  Created by Adam Fish on 11/7/17.
-//  Copyright © 2017 Adam Fish. All rights reserved.
-//
-
 #ifndef texture_h
 #define texture_h
 
@@ -76,4 +68,4 @@ public:
     }
 };
 
-#endif /* texture_h */
+#endif

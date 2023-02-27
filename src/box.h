@@ -1,11 +1,3 @@
-//
-//  box.h
-//  c3p0
-//
-//  Created by Adam Fish on 11/9/17.
-//  Copyright © 2017 Adam Fish. All rights reserved.
-//
-
 #ifndef box_h
 #define box_h
 
@@ -51,4 +43,4 @@ bool Box::BoundingBox(double t0, double t1, AABB& box) const {
     return true;
 }
 
-#endif /* box_h */
+#endif

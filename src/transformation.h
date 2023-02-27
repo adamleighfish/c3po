@@ -1,11 +1,3 @@
-//
-//  transformation.h
-//  c3p0
-//
-//  Created by Adam Fish on 11/9/17.
-//  Copyright © 2017 Adam Fish. All rights reserved.
-//
-
 #ifndef transformation_h
 #define transformation_h
 
@@ -134,4 +126,4 @@ bool RotateY::BoundingBox(double t0, double t1, AABB& box) const {
     return has_box;
 }
 
-#endif /* transformation_h */
+#endif

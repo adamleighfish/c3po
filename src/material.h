@@ -1,11 +1,3 @@
-//
-//  material.h
-//  c3p0
-//
-//  Created by Adam Fish on 11/4/17.
-//  Copyright © 2017 Adam Fish. All rights reserved.
-//
-
 #ifndef material_h
 #define material_h
 
@@ -205,4 +197,4 @@ class Isotropic : public Material {
     }
 };
 
-#endif /* material_h */
+#endif

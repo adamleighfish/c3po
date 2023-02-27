@@ -1,11 +1,3 @@
-//
-//  aggregate.h
-//  c3p0
-//
-//  Created by Adam Fish on 11/4/17.
-//  Copyright © 2017 Adam Fish. All rights reserved.
-//
-
 #ifndef aggregate_h
 #define aggregate_h
 
@@ -62,4 +54,4 @@ bool Aggregate::BoundingBox(double t0, double t1, AABB& box) const {
     return true;
 }
 
-#endif /* aggregate_h */
+#endif

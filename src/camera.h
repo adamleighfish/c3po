@@ -1,11 +1,3 @@
-//
-//  camera.h
-//  c3p0
-//
-//  Created by Adam Fish on 11/4/17.
-//  Copyright © 2017 Adam Fish. All rights reserved.
-//
-
 #ifndef camera_h
 #define camera_h
 
@@ -70,4 +62,4 @@ public:
     }
 };
 
-#endif /* camera_h */
+#endif

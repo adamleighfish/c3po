@@ -1,11 +1,3 @@
-//
-//  sphere.h
-//  c3p0
-//
-//  Created by Adam Fish on 11/4/17.
-//  Copyright © 2017 Adam Fish. All rights reserved.
-//
-
 #ifndef sphere_h
 #define sphere_h
 
@@ -64,4 +56,4 @@ bool Sphere::BoundingBox(double t0, double t1, AABB& box) const {
     return true;
 }
 
-#endif /* sphere_h */
+#endif

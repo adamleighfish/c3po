@@ -1,11 +1,3 @@
-//
-//  bvh.h
-//  c3p0
-//
-//  Created by Adam Fish on 11/6/17.
-//  Copyright © 2017 Adam Fish. All rights reserved.
-//
-
 #ifndef bvh_h
 #define bvh_h
 
@@ -135,4 +127,4 @@ bool BVHNode::BoundingBox(double t0, double t1, AABB& b) const {
     return true;
 }
 
-#endif /* bvh_h */
+#endif

@@ -1,11 +1,3 @@
-//
-//  rectangle.h
-//  c3p0
-//
-//  Created by Adam Fish on 11/9/17.
-//  Copyright © 2017 Adam Fish. All rights reserved.
-//
-
 #ifndef rectangle_h
 #define rectangle_h
 
@@ -147,4 +139,4 @@ bool RectYZ::BoundingBox(double t0, double t1, AABB& box) const {
     return true;
 }
 
-#endif /* rectangle_h */
+#endif

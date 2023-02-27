@@ -1,11 +1,3 @@
-//
-//  c3p0.cpp
-//  c3p0
-//
-//  Created by Adam Fish on 11/2/17.
-//  Copyright © 2017 Adam Fish. All rights reserved.
-//
-
 #include <chrono>
 #include <execution>
 #include <fstream>
@@ -110,7 +102,7 @@ void RenderTile(ImageTile& a, Camera& cam, Hitable* world, int ns) {
 int main(int argc, char const* argv[]) {
     int nx = 800;
     int ny = 800;
-    int ns = 1000;
+    int ns = 10;
     int tile_size = 32;
 
     Vec3f LookFrom(278, 278, -800);
@@ -176,12 +168,6 @@ int main(int argc, char const* argv[]) {
 
     std::for_each(std::execution::par, tiles.begin(), tiles.end(),
                   [&](ImageTile tile) { RenderTile(tile, cam, world, ns); });
-
-    /*
-    for (unsigned long i = 0; i < tiles.size(); ++i) {
-      RenderTile(tiles[i], cam, world, ns);
-    }
-    */
 
     auto render_end = chrono::high_resolution_clock::now();
     cout << "Render complete: "

@@ -1,11 +1,3 @@
-//
-//  utility.h
-//  c3p0
-//
-//  Created by Adam Fish on 11/4/17.
-//  Copyright © 2017 Adam Fish. All rights reserved.
-//
-
 #ifndef utility_h
 #define utility_h
 
@@ -24,4 +16,4 @@ inline int RoundAndClamp(double x) {
     return raw;
 }
 
-#endif /* utility_h */
+#endif

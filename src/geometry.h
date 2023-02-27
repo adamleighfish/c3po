@@ -1,11 +1,3 @@
-//
-//  geometry.h
-//  c3po
-//
-//  Created by Adam Fish on 11/2/17.
-//  Copyright © 2017 Adam Fish. All rights reserved.
-//
-
 #ifndef geometry_h
 #define geometry_h
 
@@ -165,4 +157,4 @@ public:
     Vec3f operator()(double t) const { return O + D * t; }
 };
 
-#endif /* geometry_h */
+#endif
