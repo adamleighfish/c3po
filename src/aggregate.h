@@ -1,57 +1,28 @@
-#ifndef aggregate_h
-#define aggregate_h
+#ifndef c3po_aggregate_h
+#define c3po_aggregate_h
 
 #include "hitable.h"
 
+#include <vector>
+
+// A simple list of hitable scene objects.
 class Aggregate : public Hitable {
 public:
-    Hitable** list;
-    int list_size;
+    Aggregate(const std::vector<Hitable*>& list);
 
-    Aggregate(){};
-    Aggregate(Hitable** list, int list_size)
-        : list(list), list_size(list_size){};
+    // Iterates over the list in order until it hits an object.
+    bool hit(Ray const& R, double t_min, double t_max,
+             HitRecord& rec) const override;
 
-    virtual bool Hit(Ray const& R, double t_min, double t_max,
-                     HitRecord& rec) const;
-    virtual bool BoundingBox(double t0, double t1, AABB& box) const;
+    // Calculates the bounding box that encompasses all objects in the
+    // aggregate.
+    //
+    // Returns true if the bounding box could be constructed and false
+    // otherwise.
+    bool bounding_box(double t0, double t1, AABB& box) const override;
+
+private:
+    const std::vector<Hitable*> list;
 };
-
-bool Aggregate::Hit(Ray const& R, double t_min, double t_max,
-                    HitRecord& rec) const {
-    HitRecord temp_rec;
-    bool hit_anything = false;
-    double closest_so_far = t_max;
-    for (int i = 0; i < list_size; ++i) {
-        if (list[i]->Hit(R, t_min, closest_so_far, temp_rec)) {
-            hit_anything = true;
-            closest_so_far = temp_rec.t;
-            rec = temp_rec;
-        }
-    }
-    return hit_anything;
-}
-
-bool Aggregate::BoundingBox(double t0, double t1, AABB& box) const {
-    if (list_size < 1)
-        return false;
-
-    AABB temp_box;
-    bool first_true = list[0]->BoundingBox(t0, t1, temp_box);
-
-    if (!first_true) {
-        return false;
-    }
-
-    box = temp_box;
-    for (int i = 1; i < list_size; ++i) {
-        if (list[i]->BoundingBox(t0, t1, temp_box)) {
-            box = get_bounding_box(box, temp_box);
-        } else {
-            return false;
-        }
-    }
-    return true;
-}
 
 #endif

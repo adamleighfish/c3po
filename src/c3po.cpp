@@ -1,11 +1,3 @@
-#include <chrono>
-#include <execution>
-#include <fstream>
-#include <iostream>
-#include <limits>
-#include <random>
-#include <vector>
-
 #include "aggregate.h"
 #include "box.h"
 #include "bvh.h"
@@ -13,7 +5,15 @@
 #include "material.h"
 #include "rectangle.h"
 #include "sphere.h"
+#include "texture.h"
 #include "transformation.h"
+
+#include <chrono>
+#include <execution>
+#include <fstream>
+#include <iostream>
+#include <limits>
+#include <vector>
 
 struct ImageTile {
     int const start_x;
@@ -23,23 +23,22 @@ struct ImageTile {
     int const nx;
     int const ny;
 
-    std::vector<Vec3f>& buff;
+    std::vector<Vec3>& buff;
 
     ImageTile(int x0, int x1, int y0, int y1, int nx, int ny,
-              std::vector<Vec3f>& buff)
+              std::vector<Vec3>& buff)
         : start_x(x0), end_x(x1), start_y(y0), end_y(y1), nx(nx), ny(ny),
           buff(buff) {}
 };
 
-Hitable* CornellBox() {
+Hitable* cornell_box() {
     Hitable** list = new Hitable*[8];
-    Material* red =
-        new Lambertian(new ConstantTexture(Vec3f(0.65, 0.05, 0.05)));
+    Material* red = new Lambertian(new ConstantTexture(Vec3(0.65, 0.05, 0.05)));
     Material* white =
-        new Lambertian(new ConstantTexture(Vec3f(0.73, 0.73, 0.73)));
+        new Lambertian(new ConstantTexture(Vec3(0.73, 0.73, 0.73)));
     Material* green =
-        new Lambertian(new ConstantTexture(Vec3f(0.12, 0.45, 0.15)));
-    Material* light = new DiffuseLight(new ConstantTexture(Vec3f(15, 15, 15)));
+        new Lambertian(new ConstantTexture(Vec3(0.12, 0.45, 0.15)));
+    Material* light = new DiffuseLight(new ConstantTexture(Vec3(15, 15, 15)));
 
     list[0] = new FlippedNormals(new RectYZ(0, 555, 0, 555, 555, red));
     list[1] = new RectYZ(0, 555, 0, 555, 0, green);
@@ -48,48 +47,48 @@ Hitable* CornellBox() {
     list[4] = new FlippedNormals(new RectXZ(0, 555, 0, 555, 555, white));
     list[5] = new FlippedNormals(new RectXY(0, 555, 0, 555, 555, white));
     list[6] = new Translate(
-        new RotateY(new Box(Vec3f(0, 0, 0), Vec3f(165, 165, 165), white), -18),
-        Vec3f(130, 0, 65));
+        new RotateY(new Box(Vec3(0, 0, 0), Vec3(165, 165, 165), white), -18),
+        Vec3(130, 0, 65));
     list[7] = new Translate(
-        new RotateY(new Box(Vec3f(0, 0, 0), Vec3f(165, 330, 165), white), 15),
-        Vec3f(265, 0, 295));
+        new RotateY(new Box(Vec3(0, 0, 0), Vec3(165, 330, 165), white), 15),
+        Vec3(265, 0, 295));
 
     return new BVHNode(list, 8, 0, 0);
 }
 
-Vec3f Sample(Ray const& R, Hitable* world, int depth) {
+Vec3 sample(Ray const& R, Hitable* world, int depth) {
     HitRecord rec;
-    if (world->Hit(R, 0.001, std::numeric_limits<float>::max(), rec)) {
-        Ray Scattered;
-        Vec3f Attentuation;
-        Vec3f Emitted = rec.mat_ptr->Emitted(rec.u, rec.v, rec.P);
+    if (world->hit(R, 0.001, std::numeric_limits<float>::max(), rec)) {
+        Ray scattered;
+        Vec3 attentuation;
+        Vec3 emitted = rec.mat_ptr->emit(rec.u, rec.v, rec.point);
         if (depth < 50 &&
-            rec.mat_ptr->Scatter(R, rec, Attentuation, Scattered)) {
-            return Emitted + Attentuation * Sample(Scattered, world, depth + 1);
+            rec.mat_ptr->scatter(R, rec, attentuation, scattered)) {
+            return emitted + attentuation * sample(scattered, world, depth + 1);
         }
-        return Emitted;
+        return emitted;
     }
-    return Vec3f(0, 0, 0);
+    return Vec3(0, 0, 0);
 }
 
-Vec3f RenderPixel(int x, int y, int nx, int ny, int ns, Camera& cam,
-                  Hitable* world) {
-    Vec3f col;
+Vec3 render_pixels(int x, int y, int nx, int ny, int ns, Camera& cam,
+                   Hitable* world) {
+    Vec3 col;
     for (int s = 0; s < ns; ++s) {
         double u = double(x + rand_double(0.0, 1.0)) / double(nx);
         double v = double(y + rand_double(0.0, 1.0)) / double(ny);
-        Ray R = cam.GetRay(u, v);
-        col += Sample(R, world, 0);
+        Ray R = cam.gen_ray(u, v);
+        col += sample(R, world, 0);
     }
     col /= ns;
-    return Vec3f(sqrt(col.x), sqrt(col.y), sqrt(col.z));
+    return Vec3(sqrt(col.x), sqrt(col.y), sqrt(col.z));
 }
 
-void RenderTile(ImageTile& a, Camera& cam, Hitable* world, int ns) {
+void render_tile(ImageTile& a, Camera& cam, Hitable* world, int ns) {
     for (int row = a.start_y; row <= a.end_y; ++row) {
         for (int col = a.start_x; col <= a.end_x; ++col) {
             int index = a.nx * (a.ny - row - 1) + col;
-            a.buff[index] = RenderPixel(col, row, a.nx, a.ny, ns, cam, world);
+            a.buff[index] = render_pixels(col, row, a.nx, a.ny, ns, cam, world);
         }
     }
 }
@@ -100,26 +99,26 @@ int main(int argc, char const* argv[]) {
     int ns = 1000;
     int tile_size = 32;
 
-    Vec3f LookFrom(278, 278, -800);
-    Vec3f LookAt(278, 278, 0);
-    Vec3f Vup(0, 1, 0);
-    double vfov = 40.0;
+    Vec3 look_from(278, 278, -800);
+    Vec3 look_at(278, 278, 0);
+    Vec3 v_up(0, 1, 0);
+    double v_fov = 40.0;
     double aspect = double(nx) / double(ny);
     double aperture = 0.0;
     double dist_to_focus = 10.0;
     double start_time = 0.0;
     double end_time = 1.0;
 
-    Camera cam(LookFrom, LookAt, Vup, vfov, aspect, aperture, dist_to_focus,
+    Camera cam(look_from, look_at, v_up, v_fov, aspect, aperture, dist_to_focus,
                start_time, end_time);
-    Hitable* world = CornellBox();
+    Hitable* world = cornell_box();
 
     // Divide the image into tiles for rendering
     std::cout << "Starting setup:\n";
     auto setup_start = std::chrono::high_resolution_clock::now();
 
     int buff_size = nx * ny;
-    std::vector<Vec3f> buffer(buff_size);
+    std::vector<Vec3> buffer(buff_size);
     std::vector<ImageTile> tiles;
 
     int tiles_wide = ceil(double(nx) / double(tile_size));
@@ -158,7 +157,7 @@ int main(int argc, char const* argv[]) {
     auto render_start = std::chrono::high_resolution_clock::now();
 
     std::for_each(std::execution::par, tiles.begin(), tiles.end(),
-                  [&](ImageTile tile) { RenderTile(tile, cam, world, ns); });
+                  [&](ImageTile tile) { render_tile(tile, cam, world, ns); });
 
     auto render_end = std::chrono::high_resolution_clock::now();
     std::cout << "Render complete: "
@@ -171,7 +170,7 @@ int main(int argc, char const* argv[]) {
     std::ofstream myfile;
     myfile.open("out.ppm");
     myfile << "P3\n" << nx << " " << ny << "\n255\n";
-    for (auto i : buffer) {
+    for (auto const& i : buffer) {
         myfile << i << "\n";
     }
     myfile.close();

@@ -1,1 +1,1 @@
-add_executable(c3po c3po.cpp "aabb.cpp" "utility.cpp")
+add_executable(c3po c3po.cpp "aabb.cpp" "aggregate.cpp" "utility.cpp" "hitable.cpp" "box.cpp" "bvh.cpp" "camera.cpp" "material.cpp" "perlin.cpp" "rectangle.cpp" "sphere.cpp" "texture.cpp" "transformation.cpp")

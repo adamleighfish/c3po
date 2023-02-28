@@ -3,14 +3,16 @@
 
 #include "geometry.h"
 
+struct HitRecord;
+
 class AABB {
 public:
-    Vec3f min, max;
+    Vec3 min, max;
 
     AABB() = default;
-    explicit AABB(Vec3f const& min, Vec3f const& max);
+    explicit AABB(Vec3 const& min, Vec3 const& max);
 
-    bool hit(Ray const& r, double t_min, double t_max) const;
+    bool hit(Ray const& r, double t_min, double t_max, HitRecord& rec) const;
 };
 
 AABB get_bounding_box(const AABB& box_a, const AABB& box_b);

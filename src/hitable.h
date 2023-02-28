@@ -1,54 +1,40 @@
-#ifndef hitable_h
-#define hitable_h
-
-#include <numbers>
+#ifndef c3po_hitable_h
+#define c3po_hitable_h
 
 #include "aabb.h"
 #include "geometry.h"
 
 class Material;
 
-void SetSphereUV(Vec3f const& P, double& u, double& v) {
-    double phi = atan2(P.z, P.x);
-    double theta = asin(P.y);
-    u = 1 - (phi + std::numbers::pi) / (2 * std::numbers::pi);
-    v = (theta + (std::numbers::pi / 2)) / std::numbers::pi;
-}
+void get_sphere_uv(Vec3 const& point, double& u, double& v);
 
 struct HitRecord {
     double t;
     double u;
     double v;
-    Vec3f P;
-    Vec3f Normal;
+    Vec3 point;
+    Vec3 normal;
     Material* mat_ptr;
 };
 
 class Hitable {
 public:
-    virtual bool Hit(Ray const& R, double t_min, double t_max,
+    virtual bool hit(Ray const& r, double t_min, double t_max,
                      HitRecord& rec) const = 0;
-    virtual bool BoundingBox(double t0, double t1, AABB& box) const = 0;
+    virtual bool bounding_box(double t0, double t1, AABB& bbox) const = 0;
 };
 
 class FlippedNormals : public Hitable {
 public:
+    FlippedNormals(Hitable* ptr);
+
+    bool hit(Ray const& r, double t_min, double t_max,
+             HitRecord& rec) const override;
+
+    bool bounding_box(double t0, double t1, AABB& box) const override;
+
+private:
     Hitable* ptr;
-
-    FlippedNormals(Hitable* ptr) : ptr(ptr) {}
-
-    virtual bool Hit(Ray const& R, double t_min, double t_max,
-                     HitRecord& rec) const {
-        if (ptr->Hit(R, t_min, t_max, rec)) {
-            rec.Normal = -rec.Normal;
-            return true;
-        }
-        return false;
-    }
-
-    virtual bool BoundingBox(double t0, double t1, AABB& box) const {
-        return ptr->BoundingBox(t0, t1, box);
-    }
 };
 
 #endif
