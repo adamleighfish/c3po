@@ -75,12 +75,9 @@ Vec3f Sample(Ray const& R, Hitable* world, int depth) {
 Vec3f RenderPixel(int x, int y, int nx, int ny, int ns, Camera& cam,
                   Hitable* world) {
     Vec3f col;
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dis(0.0, 1.0);
     for (int s = 0; s < ns; ++s) {
-        double u = double(x + dis(gen)) / double(nx);
-        double v = double(y + dis(gen)) / double(ny);
+        double u = double(x + rand_double(0.0, 1.0)) / double(nx);
+        double v = double(y + rand_double(0.0, 1.0)) / double(ny);
         Ray R = cam.GetRay(u, v);
         col += Sample(R, world, 0);
     }
@@ -100,7 +97,7 @@ void RenderTile(ImageTile& a, Camera& cam, Hitable* world, int ns) {
 int main(int argc, char const* argv[]) {
     int nx = 800;
     int ny = 800;
-    int ns = 10;
+    int ns = 1000;
     int tile_size = 32;
 
     Vec3f LookFrom(278, 278, -800);

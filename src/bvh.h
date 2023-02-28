@@ -66,10 +66,7 @@ public:
 };
 
 BVHNode::BVHNode(Hitable** list, int n, double t0, double t1) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(1, 3);
-    int axis = int(dis(gen));
+    int axis = rand_int(0, 2);
 
     if (axis == 0) {
         qsort(list, n, sizeof(Hitable*), BoxCompareX);

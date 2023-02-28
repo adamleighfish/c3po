@@ -1,7 +1,8 @@
-#ifndef utility_h
-#define utility_h
+#ifndef c3po_utility_h
+#define c3po_utility_h
 
 #include <cmath>
+#include <random>
 
 inline int RoundAndClamp(double x) {
     int min = 0;
@@ -15,5 +16,8 @@ inline int RoundAndClamp(double x) {
     }
     return raw;
 }
+
+double rand_double(double lower, double upper);
+int rand_int(int lower, int upper);
 
 #endif

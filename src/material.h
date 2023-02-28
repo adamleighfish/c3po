@@ -3,21 +3,19 @@
 
 #include "geometry.h"
 #include "texture.h"
+#include "utility.h"
 
 /**
  *
  *
  */
 
-
 Vec3f RandomInUnitSphere() {
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dis(0.0, 1.0);
-
     Vec3f P;
     do {
-        P = 2.0 * Vec3f(dis(gen), dis(gen), dis(gen)) - Vec3f(1.0, 1.0, 1.0);
+        P = 2.0 * Vec3f(rand_double(0.0, 1.0), rand_double(0.0, 1.0),
+                        rand_double(0.0, 1.0)) -
+            Vec3f(1.0, 1.0, 1.0);
     } while (P.LengthSquared() >= 1.0);
     return Normalize(P);
 }
@@ -48,7 +46,7 @@ double Schlick(double cosine, double ref_idx) {
  */
 
 class Material {
-  public:
+public:
     virtual bool Scatter(Ray const& Rin, HitRecord const& rec,
                          Vec3f& Attenuation, Ray& Scattered) const = 0;
     virtual Vec3f Emitted(double u, double v, Vec3f const& P) const {
@@ -62,7 +60,7 @@ class Material {
  */
 
 class Lambertian : public Material {
-  public:
+public:
     Texture* Albedo;
 
     Lambertian(Texture* A) : Albedo(A) {}
@@ -85,7 +83,7 @@ bool Lambertian::Scatter(Ray const& Rin, HitRecord const& rec,
  */
 
 class Metal : public Material {
-  public:
+public:
     Texture* Albedo;
     double const fuzz;
 
@@ -109,7 +107,7 @@ bool Metal::Scatter(Ray const& Rin, HitRecord const& rec, Vec3f& Attenuation,
  */
 
 class Dielectric : public Material {
-  public:
+public:
     double ref_idx;
 
     Dielectric(double ref_idx) : ref_idx(ref_idx) {}
@@ -145,11 +143,7 @@ bool Dielectric::Scatter(Ray const& Rin, HitRecord const& rec,
         reflect_prob = 1.0;
     }
 
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dis(0.0, 1.0);
-
-    if (dis(gen) < reflect_prob) {
+    if (rand_double(0.0, 1.0) < reflect_prob) {
         Scattered = Ray(rec.P, Reflected, Rin.time);
     } else {
         Scattered = Ray(rec.P, Refracted, Rin.time);
@@ -164,7 +158,7 @@ bool Dielectric::Scatter(Ray const& Rin, HitRecord const& rec,
  */
 
 class DiffuseLight : public Material {
-  public:
+public:
     Texture* Emit;
 
     DiffuseLight(Texture* A) : Emit(A) {}
@@ -184,7 +178,7 @@ class DiffuseLight : public Material {
  */
 
 class Isotropic : public Material {
-  public:
+public:
     Texture* Albedo;
 
     Isotropic(Texture* A) : Albedo(A) {}

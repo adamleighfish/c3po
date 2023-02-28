@@ -5,15 +5,13 @@
 #include <random>
 
 #include "geometry.h"
+#include "utility.h"
 
 Vec3f RandomInUnitDisk() {
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dis(0.0, 1.0);
-
     Vec3f P;
     do {
-        P = 2.0 * Vec3f(dis(gen), dis(gen), 0) - Vec3f(1, 1, 0);
+        P = 2.0 * Vec3f(rand_double(0.0, 1.0), rand_double(0.0, 1.0), 0) -
+            Vec3f(1, 1, 0);
     } while (Dot(P, P) >= 1.0);
     return P;
 }
@@ -48,11 +46,7 @@ public:
     }
 
     Ray GetRay(double s, double t) {
-        static std::random_device rd;
-        static std::mt19937 gen(rd());
-        std::uniform_real_distribution<> dis(0.0, 1.0);
-
-        double time = time0 + dis(gen) * (time1 - time0);
+        double time = time0 + rand_double(0.0, 1.0) * (time1 - time0);
         Vec3f RD = lens_radius * RandomInUnitDisk();
         Vec3f Offset = U * RD.x + V * RD.y;
         return Ray(Origin + Offset,
