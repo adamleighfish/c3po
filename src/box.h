@@ -3,9 +3,11 @@
 
 #include "hitable.h"
 
+#include <memory>
+
 class Box : public Hitable {
 public:
-    Box(Vec3 const& p0, Vec3 const& p1, Material* mat_ptr);
+    Box(Vec3 const& p0, Vec3 const& p1, std::shared_ptr<Material> mat);
 
     bool hit(Ray const& r, double t_min, double t_max,
              HitRecord& rec) const override;
@@ -15,7 +17,7 @@ private:
     const Vec3 p_min;
     const Vec3 p_max;
 
-    Hitable* bvh_ptr;
+    std::shared_ptr<Hitable> bvh;
 };
 
 #endif

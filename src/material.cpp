@@ -33,7 +33,7 @@ double schlick(double cosine, double ref_idx) {
     return r0 + (1.0 - r0) * pow((1.0 - cosine), 5.0);
 }
 
-Lambertian::Lambertian(Texture* t) : texture(t) {}
+Lambertian::Lambertian(std::shared_ptr<Texture> t) : texture(t) {}
 
 bool Lambertian::scatter(Ray const& r, HitRecord const& rec, Vec3& attentuation,
                          Ray& scattered) const {
@@ -43,7 +43,7 @@ bool Lambertian::scatter(Ray const& r, HitRecord const& rec, Vec3& attentuation,
     return true;
 }
 
-Metal::Metal(Texture* t, double fuzz) : texture(t), fuzz(fuzz) {}
+Metal::Metal(std::shared_ptr<Texture> t, double fuzz) : texture(t), fuzz(fuzz) {}
 
 bool Metal::scatter(Ray const& r, HitRecord const& rec, Vec3& attenuation,
                     Ray& scattered) const {
@@ -56,8 +56,8 @@ bool Metal::scatter(Ray const& r, HitRecord const& rec, Vec3& attenuation,
 
 Dielectric::Dielectric(double ref_idx) : ref_idx(ref_idx) {}
 
-bool Dielectric::scatter(Ray const& r, HitRecord const& rec,
-                         Vec3& attenuation, Ray& scattered) const {
+bool Dielectric::scatter(Ray const& r, HitRecord const& rec, Vec3& attenuation,
+                         Ray& scattered) const {
     Vec3 outward_normal;
     Vec3 reflected = reflect(r.dir, rec.normal);
     double ni_over_nt;
@@ -92,7 +92,7 @@ bool Dielectric::scatter(Ray const& r, HitRecord const& rec,
     return true;
 }
 
-DiffuseLight::DiffuseLight(Texture* t) : texture(t) {}
+DiffuseLight::DiffuseLight(std::shared_ptr<Texture> t) : texture(t) {}
 
 bool DiffuseLight::scatter(Ray const& r, HitRecord const& rec,
                            Vec3& attenuation, Ray& scattered) const {

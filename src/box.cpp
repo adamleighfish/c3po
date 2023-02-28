@@ -3,24 +3,30 @@
 #include "bvh.h"
 #include "rectangle.h"
 
-Box::Box(Vec3 const& p_min, Vec3 const& p_max, Material* mat_ptr)
-    : p_min(p_min), p_max(p_max) {
-    Hitable** list = new Hitable*[6];
-    list[0] = new RectXY(p_min.x, p_max.x, p_min.y, p_max.y, p_max.z, mat_ptr);
-    list[1] = new FlippedNormals(
-        new RectXY(p_min.x, p_max.x, p_min.y, p_max.y, p_min.z, mat_ptr));
-    list[2] = new RectXZ(p_min.x, p_max.x, p_min.z, p_max.z, p_max.y, mat_ptr);
-    list[3] = new FlippedNormals(
-        new RectXZ(p_min.x, p_max.x, p_min.z, p_max.z, p_min.y, mat_ptr));
-    list[4] = new RectYZ(p_min.y, p_max.y, p_min.z, p_max.z, p_max.x, mat_ptr);
-    list[5] = new FlippedNormals(
-        new RectYZ(p_min.y, p_max.y, p_min.z, p_max.z, p_min.x, mat_ptr));
+#include <vector>
 
-    bvh_ptr = new BVHNode(list, 6, 0, 0);
+Box::Box(Vec3 const& p_min, Vec3 const& p_max, std::shared_ptr<Material> mat)
+    : p_min(p_min), p_max(p_max) {
+
+    std::vector<std::shared_ptr<Hitable>> list;
+    list.push_back(std::make_shared<RectXY>(p_min.x, p_max.x, p_min.y, p_max.y,
+                                            p_max.z, mat));
+    list.push_back(std::make_shared<FlippedNormals>(std::make_shared<RectXY>(
+        p_min.x, p_max.x, p_min.y, p_max.y, p_min.z, mat)));
+    list.push_back(std::make_shared<RectXZ>(p_min.x, p_max.x, p_min.z, p_max.z,
+                                            p_max.y, mat));
+    list.push_back(std::make_shared<FlippedNormals>(std::make_shared<RectXZ>(
+        p_min.x, p_max.x, p_min.z, p_max.z, p_min.y, mat)));
+    list.push_back(std::make_shared<RectYZ>(p_min.y, p_max.y, p_min.z, p_max.z,
+                                            p_max.x, mat));
+    list.push_back(std::make_shared<FlippedNormals>(std::make_shared<RectYZ>(
+        p_min.y, p_max.y, p_min.z, p_max.z, p_min.x, mat)));
+
+    bvh = std::make_shared<BVHNode>(list, 0, 0);
 }
 
 bool Box::hit(Ray const& r, double t_min, double t_max, HitRecord& rec) const {
-    return bvh_ptr->hit(r, t_min, t_max, rec);
+    return bvh->hit(r, t_min, t_max, rec);
 }
 
 bool Box::bounding_box(double t0, double t1, AABB& bbox) const {

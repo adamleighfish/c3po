@@ -3,8 +3,8 @@
 #include "material.h"
 
 RectXY::RectXY(double x0, double x1, double y0, double y1, double k,
-               Material* mat_ptr)
-    : x0(x0), x1(x1), y0(y0), y1(y1), k(k), mat_ptr(mat_ptr) {}
+               std::shared_ptr<Material> mat)
+    : x0(x0), x1(x1), y0(y0), y1(y1), k(k), mat(mat) {}
 
 bool RectXY::hit(Ray const& r, double t0, double t1, HitRecord& rec) const {
     double t = (k - r.origin.z) / r.dir.z;
@@ -21,9 +21,10 @@ bool RectXY::hit(Ray const& r, double t0, double t1, HitRecord& rec) const {
     rec.u = (x - x0) / (x1 - x0);
     rec.v = (y - y0) / (y1 - y0);
     rec.t = t;
-    rec.mat_ptr = mat_ptr;
+    rec.mat_ptr = mat.get();
     rec.point = r(t);
     rec.normal = Vec3(0, 0, 1);
+
     return true;
 }
 
@@ -33,8 +34,8 @@ bool RectXY::bounding_box(double t0, double t1, AABB& bbox) const {
 }
 
 RectXZ::RectXZ(double x0, double x1, double z0, double z1, double k,
-               Material* mat_ptr)
-    : x0(x0), x1(x1), z0(z0), z1(z1), k(k), mat_ptr(mat_ptr) {}
+               std::shared_ptr<Material> mat)
+    : x0(x0), x1(x1), z0(z0), z1(z1), k(k), mat(mat) {}
 
 bool RectXZ::hit(Ray const& r, double t0, double t1, HitRecord& rec) const {
     double t = (k - r.origin.y) / r.dir.y;
@@ -51,7 +52,7 @@ bool RectXZ::hit(Ray const& r, double t0, double t1, HitRecord& rec) const {
     rec.u = (x - x0) / (x1 - x0);
     rec.v = (z - z0) / (z1 - z0);
     rec.t = t;
-    rec.mat_ptr = mat_ptr;
+    rec.mat_ptr = mat.get();
     rec.point = r(t);
     rec.normal = Vec3(0, 1, 0);
     return true;
@@ -63,8 +64,8 @@ bool RectXZ::bounding_box(double t0, double t1, AABB& bbox) const {
 }
 
 RectYZ::RectYZ(double x0, double x1, double z0, double z1, double k,
-               Material* mat_ptr)
-    : y0(x0), y1(x1), z0(z0), z1(z1), k(k), mat_ptr(mat_ptr) {}
+               std::shared_ptr<Material> mat)
+    : y0(x0), y1(x1), z0(z0), z1(z1), k(k), mat(mat) {}
 
 bool RectYZ::hit(Ray const& r, double t0, double t1, HitRecord& rec) const {
     double t = (k - r.origin.x) / r.dir.x;
@@ -81,7 +82,7 @@ bool RectYZ::hit(Ray const& r, double t0, double t1, HitRecord& rec) const {
     rec.u = (y - y0) / (y1 - y0);
     rec.v = (z - z0) / (z1 - z0);
     rec.t = t;
-    rec.mat_ptr = mat_ptr;
+    rec.mat_ptr = mat.get();
     rec.point = r(t);
     rec.normal = Vec3(1, 0, 0);
     return true;
