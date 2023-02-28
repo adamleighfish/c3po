@@ -3,7 +3,7 @@
 #include <limits>
 #include <numbers>
 
-Translate::Translate(Hitable* ptr, Vec3 const& offset)
+Translate::Translate(std::shared_ptr<Hitable> ptr, Vec3 const& offset)
     : ptr(ptr), offset(offset) {}
 
 bool Translate::hit(Ray const& r, double t_min, double t_max,
@@ -24,7 +24,7 @@ bool Translate::bounding_box(double t0, double t1, AABB& bbox) const {
     return false;
 }
 
-RotateY::RotateY(Hitable* ptr, double angle) : ptr(ptr) {
+RotateY::RotateY(std::shared_ptr<Hitable> ptr, double angle) : ptr(ptr) {
     double radians = (std::numbers::pi / 180.0) * angle;
     sin_theta = sin(radians);
     cos_theta = cos(radians);

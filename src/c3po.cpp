@@ -13,6 +13,7 @@
 #include <fstream>
 #include <iostream>
 #include <limits>
+#include <memory>
 #include <vector>
 
 struct ImageTile {
@@ -31,29 +32,39 @@ struct ImageTile {
           buff(buff) {}
 };
 
-Hitable* cornell_box() {
-    Hitable** list = new Hitable*[8];
-    Material* red = new Lambertian(new ConstantTexture(Vec3(0.65, 0.05, 0.05)));
-    Material* white =
-        new Lambertian(new ConstantTexture(Vec3(0.73, 0.73, 0.73)));
-    Material* green =
-        new Lambertian(new ConstantTexture(Vec3(0.12, 0.45, 0.15)));
-    Material* light = new DiffuseLight(new ConstantTexture(Vec3(15, 15, 15)));
+std::unique_ptr<Hitable> cornell_box() {
+    std::vector<std::shared_ptr<Hitable>> list;
 
-    list[0] = new FlippedNormals(new RectYZ(0, 555, 0, 555, 555, red));
-    list[1] = new RectYZ(0, 555, 0, 555, 0, green);
-    list[2] = new RectXZ(213, 343, 227, 332, 554, light);
-    list[3] = new RectXZ(0, 555, 0, 555, 0, white);
-    list[4] = new FlippedNormals(new RectXZ(0, 555, 0, 555, 555, white));
-    list[5] = new FlippedNormals(new RectXY(0, 555, 0, 555, 555, white));
-    list[6] = new Translate(
-        new RotateY(new Box(Vec3(0, 0, 0), Vec3(165, 165, 165), white), -18),
-        Vec3(130, 0, 65));
-    list[7] = new Translate(
-        new RotateY(new Box(Vec3(0, 0, 0), Vec3(165, 330, 165), white), 15),
-        Vec3(265, 0, 295));
+    auto red = std::make_shared<Lambertian>(
+        std::make_shared<ConstantTexture>(Vec3(0.65, 0.05, 0.05)));
+    auto white = std::make_shared<Lambertian>(
+        std::make_shared<ConstantTexture>(Vec3(0.73, 0.73, 0.73)));
+    auto green = std::make_shared<Lambertian>(
+        std::make_shared<ConstantTexture>(Vec3(0.12, 0.45, 0.15)));
+    auto light = std::make_shared<DiffuseLight>(
+        std::make_shared<ConstantTexture>(Vec3(15, 15, 15)));
 
-    return new BVHNode(list, 8, 0, 0);
+    list.push_back(std::make_shared<FlippedNormals>(
+        std::make_shared<RectYZ>(0, 555, 0, 555, 555, red)));
+    list.push_back(std::make_shared<RectYZ>(0, 555, 0, 555, 0, green));
+    list.push_back(std::make_shared<RectXZ>(213, 343, 227, 332, 554, light));
+    list.push_back(std::make_shared<RectXZ>(0, 555, 0, 555, 0, white));
+    list.push_back(std::make_shared<FlippedNormals>(
+        std::make_shared<RectXZ>(0, 555, 0, 555, 555, white)));
+    list.push_back(std::make_shared<FlippedNormals>(
+        std::make_shared<RectXY>(0, 555, 0, 555, 555, white)));
+    list.push_back(std::make_shared<Translate>(
+        std::make_unique<RotateY>(
+            std::make_unique<Box>(Vec3(0, 0, 0), Vec3(165, 165, 165), white),
+            -18),
+        Vec3(130, 0, 65)));
+    list.push_back(std::make_shared<Translate>(
+        std::make_unique<RotateY>(
+            std::make_unique<Box>(Vec3(0, 0, 0), Vec3(165, 330, 165), white),
+            15),
+        Vec3(265, 0, 295)));
+
+    return make_unique<BVHNode>(list, 0, 0);
 }
 
 Vec3 sample(Ray const& R, Hitable* world, int depth) {
@@ -96,7 +107,7 @@ void render_tile(ImageTile& a, Camera& cam, Hitable* world, int ns) {
 int main(int argc, char const* argv[]) {
     int nx = 800;
     int ny = 800;
-    int ns = 1000;
+    int ns = 10;
     int tile_size = 32;
 
     Vec3 look_from(278, 278, -800);
@@ -111,7 +122,7 @@ int main(int argc, char const* argv[]) {
 
     Camera cam(look_from, look_at, v_up, v_fov, aspect, aperture, dist_to_focus,
                start_time, end_time);
-    Hitable* world = cornell_box();
+    std::unique_ptr<Hitable> world = cornell_box();
 
     // Divide the image into tiles for rendering
     std::cout << "Starting setup:\n";
@@ -156,8 +167,9 @@ int main(int argc, char const* argv[]) {
 
     auto render_start = std::chrono::high_resolution_clock::now();
 
-    std::for_each(std::execution::par, tiles.begin(), tiles.end(),
-                  [&](ImageTile tile) { render_tile(tile, cam, world, ns); });
+    std::for_each(
+        std::execution::par, tiles.begin(), tiles.end(),
+        [&](ImageTile tile) { render_tile(tile, cam, world.get(), ns); });
 
     auto render_end = std::chrono::high_resolution_clock::now();
     std::cout << "Render complete: "

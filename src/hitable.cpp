@@ -9,7 +9,9 @@ void get_sphere_uv(Vec3 const& point, double& u, double& v) {
     v = (theta + (std::numbers::pi / 2)) / std::numbers::pi;
 }
 
-FlippedNormals::FlippedNormals(Hitable* ptr) : ptr(ptr) {}
+Hitable::~Hitable() = default;
+
+FlippedNormals::FlippedNormals(std::shared_ptr<Hitable> ptr) : ptr(ptr) {}
 
 bool FlippedNormals::hit(Ray const& r, double t_min, double t_max,
                          HitRecord& rec) const {
