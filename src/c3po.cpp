@@ -15,8 +15,6 @@
 #include "sphere.h"
 #include "transformation.h"
 
-using namespace std;
-
 struct ImageTile {
     int const start_x;
     int const start_y;
@@ -119,15 +117,13 @@ int main(int argc, char const* argv[]) {
                start_time, end_time);
     Hitable* world = CornellBox();
 
-    /**
-     * Divide the image into tiles for rendering
-     */
-    cout << "Starting setup:\n";
-    auto setup_start = chrono::high_resolution_clock::now();
+    // Divide the image into tiles for rendering
+    std::cout << "Starting setup:\n";
+    auto setup_start = std::chrono::high_resolution_clock::now();
 
     int buff_size = nx * ny;
-    vector<Vec3f> buffer(buff_size);
-    vector<ImageTile> tiles;
+    std::vector<Vec3f> buffer(buff_size);
+    std::vector<ImageTile> tiles;
 
     int tiles_wide = ceil(double(nx) / double(tile_size));
     int tiles_tall = ceil(double(ny) / double(tile_size));
@@ -152,34 +148,30 @@ int main(int argc, char const* argv[]) {
         }
     }
 
-    auto setup_end = chrono::high_resolution_clock::now();
-    cout << "Setup complete: "
-         << std::chrono::duration_cast<chrono::milliseconds>(setup_end -
-                                                             setup_start)
-                .count()
-         << " ms\n";
+    auto setup_end = std::chrono::high_resolution_clock::now();
+    std::cout << "Setup complete: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(
+                     setup_end - setup_start)
+                     .count()
+              << " ms\n";
 
-    /**
-     * Render the tiles in parallel
-     */
-    cout << "Starting render:\n";
+    // Render the tiles in parallel
+    std::cout << "Starting render:\n";
 
-    auto render_start = chrono::high_resolution_clock::now();
+    auto render_start = std::chrono::high_resolution_clock::now();
 
     std::for_each(std::execution::par, tiles.begin(), tiles.end(),
                   [&](ImageTile tile) { RenderTile(tile, cam, world, ns); });
 
-    auto render_end = chrono::high_resolution_clock::now();
-    cout << "Render complete: "
-         << std::chrono::duration_cast<chrono::seconds>(render_end -
-                                                        render_start)
-                .count()
-         << " s\n";
+    auto render_end = std::chrono::high_resolution_clock::now();
+    std::cout << "Render complete: "
+              << std::chrono::duration_cast<std::chrono::seconds>(render_end -
+                                                                  render_start)
+                     .count()
+              << " s\n";
 
-    /**
-     * Writing buffer to file
-     */
-    ofstream myfile;
+    // Writing buffer to file
+    std::ofstream myfile;
     myfile.open("out.ppm");
     myfile << "P3\n" << nx << " " << ny << "\n255\n";
     for (auto i : buffer) {

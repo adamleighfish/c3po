@@ -35,7 +35,7 @@ bool Translate::Hit(Ray const& R, double t_min, double t_max,
 
 bool Translate::BoundingBox(double t0, double t1, AABB& box) const {
     if (ptr->BoundingBox(t0, t1, box)) {
-        box = AABB(box.Min + Offset, box.Max + Offset);
+        box = AABB(box.min + Offset, box.max + Offset);
         return true;
     }
     return false;
@@ -76,9 +76,9 @@ RotateY::RotateY(Hitable* ptr, double angle) : ptr(ptr) {
     for (int i = 0; i < 2; ++i) {
         for (int j = 0; j < 2; ++j) {
             for (int k = 0; k < 2; ++k) {
-                double x = i * bbox.Max.x + (1 - i) * bbox.Min.x;
-                double y = j * bbox.Max.y + (1 - j) * bbox.Min.y;
-                double z = k * bbox.Max.z + (1 - k) * bbox.Min.z;
+                double x = i * bbox.max.x + (1 - i) * bbox.min.x;
+                double y = j * bbox.max.y + (1 - j) * bbox.min.y;
+                double z = k * bbox.max.z + (1 - k) * bbox.min.z;
                 double new_x = cos_theta * x + sin_theta * z;
                 double new_z = cos_theta * z - sin_theta * x;
 

@@ -46,7 +46,7 @@ bool Aggregate::BoundingBox(double t0, double t1, AABB& box) const {
     box = temp_box;
     for (int i = 1; i < list_size; ++i) {
         if (list[i]->BoundingBox(t0, t1, temp_box)) {
-            box = SurroundingBox(box, temp_box);
+            box = get_bounding_box(box, temp_box);
         } else {
             return false;
         }

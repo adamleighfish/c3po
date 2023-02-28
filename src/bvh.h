@@ -17,7 +17,7 @@ int BoxCompareX(void const* a, void const* b) {
         !b_hitable->BoundingBox(0, 0, box_right)) {
         std::cerr << "ERROR: could not find bounding box\n";
     }
-    if (box_left.Min.x - box_right.Min.x < 0.0) {
+    if (box_left.min.x - box_right.min.x < 0.0) {
         return -1;
     }
     return 1;
@@ -31,7 +31,7 @@ int BoxCompareY(void const* a, void const* b) {
         !b_hitable->BoundingBox(0, 0, box_right)) {
         std::cerr << "ERROR: could not find bounding box\n";
     }
-    if (box_left.Min.y - box_right.Min.y < 0.0) {
+    if (box_left.min.y - box_right.min.y < 0.0) {
         return -1;
     }
     return 1;
@@ -45,7 +45,7 @@ int BoxCompareZ(void const* a, void const* b) {
         !b_hitable->BoundingBox(0, 0, box_right)) {
         std::cerr << "ERROR: could not find bounding box\n";
     }
-    if (box_left.Min.z - box_right.Min.z < 0.0) {
+    if (box_left.min.z - box_right.min.z < 0.0) {
         return -1;
     }
     return 1;
@@ -94,12 +94,12 @@ BVHNode::BVHNode(Hitable** list, int n, double t0, double t1) {
         !right->BoundingBox(t0, t1, box_right)) {
         std::cerr << "ERROR: could not find bounding box\n";
     }
-    box = SurroundingBox(box_left, box_right);
+    box = get_bounding_box(box_left, box_right);
 }
 
 bool BVHNode::Hit(Ray const& R, double t_min, double t_max,
                   HitRecord& rec) const {
-    if (box.Hit(R, t_min, t_max)) {
+    if (box.hit(R, t_min, t_max)) {
         HitRecord left_rec, right_rec;
         bool hit_left = left->Hit(R, t_min, t_max, left_rec);
         bool hit_right = right->Hit(R, t_min, t_max, right_rec);
