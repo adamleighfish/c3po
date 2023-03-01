@@ -8,6 +8,9 @@
 #include "texture.h"
 #include "transformation.h"
 
+#include <ImfRgba.h>
+#include <ImfRgbaFile.h>
+
 #include <chrono>
 #include <execution>
 #include <fstream>
@@ -107,7 +110,7 @@ void render_tile(ImageTile& a, Camera& cam, Hitable* world, int ns) {
 int main(int argc, char const* argv[]) {
     int nx = 800;
     int ny = 800;
-    int ns = 10;
+    int ns = 1000;
     int tile_size = 32;
 
     Vec3 look_from(278, 278, -800);
@@ -178,14 +181,18 @@ int main(int argc, char const* argv[]) {
                      .count()
               << " s\n";
 
-    // Writing buffer to file
-    std::ofstream myfile;
-    myfile.open("out.ppm");
-    myfile << "P3\n" << nx << " " << ny << "\n255\n";
-    for (auto const& i : buffer) {
-        myfile << i << "\n";
+    std::vector<Imf::Rgba> pixels;
+    for (Vec3 const& v : buffer) {
+        pixels.push_back({ half(v.r()), half(v.g()), half(v.b()), 0.0});
     }
-    myfile.close();
+
+    try {
+        Imf::RgbaOutputFile file("output.exr", nx, ny, Imf::WRITE_RGB);
+        file.setFrameBuffer(pixels.data(), 1, nx);
+        file.writePixels(ny);
+    } catch (std::exception const& e) {
+        std::cerr << e.what() << std::endl;
+    }
 
     return 0;
 }
