@@ -24,6 +24,14 @@ A comparison of different sample rates on an 800x800 Cornell Box render. Left im
 
 ---
 
+# Building
+
+I use vcpkg to manage dependecies so you'll need to make sure any third party libraries need are discoverable with CMake's find_package command. The current dependecies are:
+ - OpenEXR
+
+After your dependecies are good then you should be able to build this project like any standard CMake project.
+
+---
 
 ## Future Features
 
