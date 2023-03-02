@@ -1,15 +1,18 @@
-#include "aggregate.h"
 #include "box.h"
 #include "bvh.h"
 #include "camera.h"
+#include "loader.h"
 #include "material.h"
 #include "rectangle.h"
 #include "sphere.h"
 #include "texture.h"
 #include "transformation.h"
+#include "utility.h"
 
-#include <ImfRgba.h>
-#include <ImfRgbaFile.h>
+#include "ImfRgba.h"
+#include "ImfRgbaFile.h"
+
+#include "Imath/ImathColor.h"
 
 #include <chrono>
 #include <execution>
@@ -27,10 +30,10 @@ struct ImageTile {
     int const nx;
     int const ny;
 
-    std::vector<Vec3>& buff;
+    std::vector<Imath::Color3f>& buff;
 
     ImageTile(int x0, int x1, int y0, int y1, int nx, int ny,
-              std::vector<Vec3>& buff)
+              std::vector<Imath::Color3f>& buff)
         : start_x(x0), end_x(x1), start_y(y0), end_y(y1), nx(nx), ny(ny),
           buff(buff) {}
 };
@@ -45,7 +48,7 @@ std::unique_ptr<Hitable> cornell_box() {
     auto green = std::make_shared<Lambertian>(
         std::make_shared<ConstantTexture>(Vec3(0.12, 0.45, 0.15)));
     auto light = std::make_shared<DiffuseLight>(
-        std::make_shared<ConstantTexture>(Vec3(15, 15, 15)));
+        std::make_shared<ConstantTexture>(Vec3(10, 10, 10)));
 
     list.push_back(std::make_shared<FlippedNormals>(
         std::make_shared<RectYZ>(0, 555, 0, 555, 555, red)));
@@ -70,39 +73,39 @@ std::unique_ptr<Hitable> cornell_box() {
     return make_unique<BVHNode>(list, 0, 0);
 }
 
-Vec3 sample(Ray const& R, Hitable* world, int depth) {
+Imath::Color3f sample(Ray const& R, Hitable* world, int depth) {
     HitRecord rec;
     if (world->hit(R, 0.001, std::numeric_limits<float>::max(), rec)) {
         Ray scattered;
-        Vec3 attentuation;
-        Vec3 emitted = rec.mat_ptr->emit(rec.u, rec.v, rec.point);
+        Imath::Color3f attentuation;
+        Imath::Color3f emitted = rec.mat_ptr->emit(rec.u, rec.v, rec.point);
         if (depth < 50 &&
             rec.mat_ptr->scatter(R, rec, attentuation, scattered)) {
             return emitted + attentuation * sample(scattered, world, depth + 1);
         }
         return emitted;
     }
-    return Vec3(0, 0, 0);
+    return Imath::Color3f(0, 0, 0);
 }
 
-Vec3 render_pixels(int x, int y, int nx, int ny, int ns, Camera& cam,
+Imath::Color3f render_pixel(int x, int y, int nx, int ny, int ns, Camera& cam,
                    Hitable* world) {
-    Vec3 col;
+    Imath::Color3f color;
     for (int s = 0; s < ns; ++s) {
-        double u = double(x + rand_double(0.0, 1.0)) / double(nx);
-        double v = double(y + rand_double(0.0, 1.0)) / double(ny);
+        double u = double(x + rand_float(0.0, 1.0)) / double(nx);
+        double v = double(y + rand_float(0.0, 1.0)) / double(ny);
         Ray R = cam.gen_ray(u, v);
-        col += sample(R, world, 0);
+        color += sample(R, world, 0);
     }
-    col /= ns;
-    return Vec3(sqrt(col.x), sqrt(col.y), sqrt(col.z));
+    color /= ns;
+    return Imath::Color3f(sqrt(color.x), sqrt(color.y), sqrt(color.z));
 }
 
 void render_tile(ImageTile& a, Camera& cam, Hitable* world, int ns) {
     for (int row = a.start_y; row <= a.end_y; ++row) {
         for (int col = a.start_x; col <= a.end_x; ++col) {
             int index = a.nx * (a.ny - row - 1) + col;
-            a.buff[index] = render_pixels(col, row, a.nx, a.ny, ns, cam, world);
+            a.buff[index] = render_pixel(col, row, a.nx, a.ny, ns, cam, world);
         }
     }
 }
@@ -132,7 +135,7 @@ int main(int argc, char const* argv[]) {
     auto setup_start = std::chrono::high_resolution_clock::now();
 
     int buff_size = nx * ny;
-    std::vector<Vec3> buffer(buff_size);
+    std::vector<Imath::Color3f> buffer(buff_size);
     std::vector<ImageTile> tiles;
 
     int tiles_wide = ceil(double(nx) / double(tile_size));
@@ -182,8 +185,8 @@ int main(int argc, char const* argv[]) {
               << " s\n";
 
     std::vector<Imf::Rgba> pixels;
-    for (Vec3 const& v : buffer) {
-        pixels.push_back({ half(v.r()), half(v.g()), half(v.b()), 0.0});
+    for (auto const& p : buffer) {
+        pixels.push_back({ p.x, p.y, p.z, 0.0});
     }
 
     try {
@@ -193,6 +196,8 @@ int main(int argc, char const* argv[]) {
     } catch (std::exception const& e) {
         std::cerr << e.what() << std::endl;
     }
+
+    load_obj("../../../scenes/cube/cube.obj");
 
     return 0;
 }

@@ -8,10 +8,10 @@ public:
 
     Translate(std::shared_ptr<Hitable> ptr, Vec3 const& offset);
 
-    bool hit(Ray const& r, double t_min, double t_max,
+    bool hit(Ray const& r, float t_min, float t_max,
              HitRecord& rec) const override;
 
-    bool bounding_box(double t0, double t1, AABB& bbox) const override;
+    bool bounding_box(float t0, float t1, AABB& bbox) const override;
 
 private:
     std::shared_ptr<Hitable> ptr;
@@ -20,16 +20,16 @@ private:
 
 class RotateY : public Hitable {
 public:
-    RotateY(std::shared_ptr<Hitable> ptr, double angle);
+    RotateY(std::shared_ptr<Hitable> ptr, float angle);
 
-    virtual bool hit(Ray const& r, double t_min, double t_max,
+    virtual bool hit(Ray const& r, float t_min, float t_max,
                      HitRecord& rec) const;
-    virtual bool bounding_box(double t0, double t1, AABB& bbox) const;
+    virtual bool bounding_box(float t0, float t1, AABB& bbox) const;
 
 private:
     std::shared_ptr<Hitable> ptr;
-    double sin_theta;
-    double cos_theta;
+    float sin_theta;
+    float cos_theta;
     bool has_box;
     AABB box;
 };

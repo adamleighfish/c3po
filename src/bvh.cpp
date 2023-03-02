@@ -1,10 +1,12 @@
 #include "bvh.h"
 
+#include "utility.h"
+
 #include <algorithm>
 #include <iostream>
 
-BVHNode::BVHNode(std::vector<std::shared_ptr<Hitable>> list, double t0,
-                 double t1) {
+BVHNode::BVHNode(std::vector<std::shared_ptr<Hitable>> list, float t0,
+                 float t1) {
 
     int axis = rand_int(0, 2);
     std::sort(list.begin(), list.end(),
@@ -51,7 +53,7 @@ BVHNode::BVHNode(std::vector<std::shared_ptr<Hitable>> list, double t0,
     _bbox = get_bounding_box(box_left, box_right);
 }
 
-bool BVHNode::hit(Ray const& r, double t_min, double t_max,
+bool BVHNode::hit(Ray const& r, float t_min, float t_max,
                   HitRecord& rec) const {
     if (_bbox.hit(r, t_min, t_max, rec)) {
         HitRecord left_rec, right_rec;
@@ -76,7 +78,7 @@ bool BVHNode::hit(Ray const& r, double t_min, double t_max,
     return false;
 }
 
-bool BVHNode::bounding_box(double t0, double t1, AABB& bbox) const {
+bool BVHNode::bounding_box(float t0, float t1, AABB& bbox) const {
     bbox = _bbox;
     return true;
 }

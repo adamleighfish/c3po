@@ -17,7 +17,7 @@ inline int RoundAndClamp(double x) {
     return raw;
 }
 
-double rand_double(double lower, double upper);
+double rand_float(double lower, double upper);
 int rand_int(int lower, int upper);
 
 #endif

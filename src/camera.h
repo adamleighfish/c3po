@@ -6,10 +6,10 @@
 class Camera {
 public:
     Camera(Vec3 const& look_from, Vec3 const& look_at, Vec3 const& v_up,
-           double v_fov, double aspect, double aperture, double focus_dist,
-           double t0 = 0.0, double t1 = 0.0);
+           float v_fov, float aspect, float aperture, float focus_dist,
+           float t0 = 0.0, float t1 = 0.0);
 
-    Ray gen_ray(double s, double t);
+    Ray gen_ray(float s, float t);
 
 private:
     Vec3 origin;
@@ -17,8 +17,8 @@ private:
     Vec3 horizontal;
     Vec3 vertical;
     Vec3 u, v, w;
-    double lens_radius;
-    double time0, time1;
+    float lens_radius;
+    float time0, time1;
 };
 
 #endif

@@ -7,40 +7,40 @@ class Material;
 
 class RectXY : public Hitable {
 public:
-    RectXY(double x0, double x1, double y0, double y1, double k,
+    RectXY(float x0, float x1, float y0, float y1, float k,
            std::shared_ptr<Material> mat);
 
-    bool hit(Ray const& r, double t0, double t1, HitRecord& rec) const override;
-    bool bounding_box(double t0, double t1, AABB& box) const override;
+    bool hit(Ray const& r, float t0, float t1, HitRecord& rec) const override;
+    bool bounding_box(float t0, float t1, AABB& box) const override;
 
 private:
-    double x0, x1, y0, y1, k;
+    float x0, x1, y0, y1, k;
     std::shared_ptr<Material> mat;
 };
 
 class RectXZ : public Hitable {
 public:
-    RectXZ(double x0, double x1, double z0, double z1, double k,
+    RectXZ(float x0, float x1, float z0, float z1, float k,
            std::shared_ptr<Material> mat);
 
-    virtual bool hit(Ray const& r, double t0, double t1, HitRecord& rec) const;
-    virtual bool bounding_box(double t0, double t1, AABB& box) const;
+    virtual bool hit(Ray const& r, float t0, float t1, HitRecord& rec) const;
+    virtual bool bounding_box(float t0, float t1, AABB& box) const;
 
 private:
-    double x0, x1, z0, z1, k;
+    float x0, x1, z0, z1, k;
     std::shared_ptr<Material> mat;
 };
 
 class RectYZ : public Hitable {
 public:
-    RectYZ(double x0, double x1, double z0, double z1, double k,
+    RectYZ(float x0, float x1, float z0, float z1, float k,
            std::shared_ptr<Material> mat);
 
-    virtual bool hit(Ray const& r, double t0, double t1, HitRecord& rec) const;
-    virtual bool bounding_box(double t0, double t1, AABB& box) const;
+    virtual bool hit(Ray const& r, float t0, float t1, HitRecord& rec) const;
+    virtual bool bounding_box(float t0, float t1, AABB& box) const;
 
 private:
-    double y0, y1, z0, z1, k;
+    float y0, y1, z0, z1, k;
     std::shared_ptr<Material> mat;
 };
 

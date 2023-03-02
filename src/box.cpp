@@ -25,11 +25,11 @@ Box::Box(Vec3 const& p_min, Vec3 const& p_max, std::shared_ptr<Material> mat)
     bvh = std::make_shared<BVHNode>(list, 0, 0);
 }
 
-bool Box::hit(Ray const& r, double t_min, double t_max, HitRecord& rec) const {
+bool Box::hit(Ray const& r, float t_min, float t_max, HitRecord& rec) const {
     return bvh->hit(r, t_min, t_max, rec);
 }
 
-bool Box::bounding_box(double t0, double t1, AABB& bbox) const {
+bool Box::bounding_box(float t0, float t1, AABB& bbox) const {
     bbox = AABB(p_min, p_max);
     return true;
 }
