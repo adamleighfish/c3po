@@ -3,6 +3,11 @@
 #include <limits>
 #include <utility>
 
+float distance(Point3f const& a, Point3f const& b) {
+    return std::sqrtf((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) +
+                      (a.z - b.z) * (a.z - b.z));
+}
+
 Ray::Ray() : t_max(std::numeric_limits<float>::max()), time(0.f){};
 
 Ray::Ray(Point3f const& origin, Vec3f const& dir, float t_max, float time)

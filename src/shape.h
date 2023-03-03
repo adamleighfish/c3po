@@ -36,10 +36,14 @@ public:
     //
     // If a hit occurs then returns true and records the hit location in `t_hit`
     // and the surface details in `isect`.
+    //
+    // `ray` is assumed to be in world space;
     virtual bool intersect(Ray const& ray, float& t_hit,
                            SurfaceInteraction& isect) const = 0;
 
     // Returns true if `ray` intersects with this shape.
+    //
+    // `ray` is assumed to be in world space;
     virtual bool intersects(Ray const& ray) const;
 
     virtual float area() const = 0;

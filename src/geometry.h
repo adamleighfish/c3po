@@ -13,6 +13,9 @@ using Point3f = Imath::V3f;
 using Normal3f = Imath::V3f;
 using Bounds3f = Imath::Box3f;
 
+// Returns the distance between the two points.
+float distance(Point3f const& a, Point3f const& v);
+
 class Ray {
 public:
     Point3f origin;

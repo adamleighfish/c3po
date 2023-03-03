@@ -118,8 +118,6 @@ SurfaceInteraction Transform::apply(SurfaceInteraction const& si) const {
     res.uv = si.uv;
     res.dpdu = this->apply_v(si.dpdu);
     res.dpdv = this->apply_v(si.dpdv);
-    res.dndu = this->apply_n(si.dndu);
-    res.dndv = this->apply_n(si.dndv);
     res.shape = si.shape;
 
     return res;
