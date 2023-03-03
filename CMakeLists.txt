@@ -11,6 +11,7 @@ add_executable(
 	"src/box.cpp" 
 	"src/bvh.cpp"
 	"src/camera.cpp"
+	"src/geometry.cpp"
 	"src/hitable.cpp" 
 	"src/interaction.cpp"
 	"src/material.cpp" 
