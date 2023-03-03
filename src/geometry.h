@@ -8,10 +8,11 @@
 
 // XXX: Just using aliases for now, may need to make thin wrapper classes in
 // the future to avoid implicit conversions.
+using Vec2f = Imath::V2f;
+using Point2f = Imath::V2f;
 using Vec3f = Imath::V3f;
 using Point3f = Imath::V3f;
 using Normal3f = Imath::V3f;
-
 using Bounds3f = Imath::Box3f;
 
 class Ray {
@@ -28,5 +29,10 @@ public:
 
     Vec3f operator()(float t) const { return origin + dir * t; }
 };
+
+// Flips the normal vector `n` to face the same direction as `v`.
+Normal3f face_forward(Normal3f const& n, Vec3f const& v) {
+    return (n.dot(v) < 0.f) ? -n : n;
+}
 
 #endif

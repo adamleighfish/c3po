@@ -99,14 +99,30 @@ Normal3f Transform::apply_n(Normal3f const& n) const {
     return res;
 }
 
-Ray Transform::apply_r(Ray const& r) const {
+Ray Transform::apply(Ray const& r) const {
     Point3f origin = (*this).apply_p(r.origin);
-    Vec3f dir = (*this).apply_v(r.dir);
+    Vec3f dir = this->apply_v(r.dir);
     return Ray(origin, dir, r.t_max, r.time);
 }
 
-Bounds3f Transform::apply_b(Bounds3f const& b) const {
+Bounds3f Transform::apply(Bounds3f const& b) const {
     return Imath::transform(b, m);
+}
+
+SurfaceInteraction Transform::apply(SurfaceInteraction const& si) const {
+    SurfaceInteraction res;
+    res.p = this->apply_p(si.p);
+    res.n = this->apply_n(si.n).normalize();
+    res.wo = this->apply_v(si.wo);
+    res.time = si.time;
+    res.uv = si.uv;
+    res.dpdu = this->apply_v(si.dpdu);
+    res.dpdv = this->apply_v(si.dpdv);
+    res.dndu = this->apply_n(si.dndu);
+    res.dndv = this->apply_n(si.dndv);
+    res.shape = si.shape;
+
+    return res;
 }
 
 Transform Transform::operator*(Transform const& t) const {

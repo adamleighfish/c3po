@@ -2,6 +2,7 @@
 #define c3po_transform_h
 
 #include "geometry.h"
+#include "interaction.h"
 
 #include "Imath/ImathMatrix.h"
 
@@ -70,14 +71,18 @@ public:
     Normal3f apply_n(Normal3f const& n) const;
 
     // Applies the transform to the ray `r` and returns the result.
-    Ray apply_r(Ray const& r) const;
+    Ray apply(Ray const& r) const;
 
     // Applies the transform to the bounds `b` and returns the result.
-    Bounds3f apply_b(Bounds3f const& b) const;
+    Bounds3f apply(Bounds3f const& b) const;
+
+    // Applies the transform to the surface interaction `si` and returns the
+    // results.
+    SurfaceInteraction apply(SurfaceInteraction const& si) const;
 
     // Transform composition.
     Transform operator*(Transform const& t) const;
-   
+
     // Returns true if applying this transform will swap the handedness.
     bool swaps_handedness() const;
 
