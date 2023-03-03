@@ -42,35 +42,38 @@ std::unique_ptr<Hitable> cornell_box() {
     std::vector<std::shared_ptr<Hitable>> list;
 
     auto red = std::make_shared<Lambertian>(
-        std::make_shared<ConstantTexture>(Vec3(0.65, 0.05, 0.05)));
+        std::make_shared<ConstantTexture>(Vec3f(0.65f, 0.05f, 0.05f)));
     auto white = std::make_shared<Lambertian>(
-        std::make_shared<ConstantTexture>(Vec3(0.73, 0.73, 0.73)));
+        std::make_shared<ConstantTexture>(Vec3f(0.73f)));
     auto green = std::make_shared<Lambertian>(
-        std::make_shared<ConstantTexture>(Vec3(0.12, 0.45, 0.15)));
+        std::make_shared<ConstantTexture>(Vec3f(0.12f, 0.45f, 0.15f)));
     auto light = std::make_shared<DiffuseLight>(
-        std::make_shared<ConstantTexture>(Vec3(10, 10, 10)));
+        std::make_shared<ConstantTexture>(Vec3f(1.0f)));
 
     list.push_back(std::make_shared<FlippedNormals>(
-        std::make_shared<RectYZ>(0, 555, 0, 555, 555, red)));
-    list.push_back(std::make_shared<RectYZ>(0, 555, 0, 555, 0, green));
-    list.push_back(std::make_shared<RectXZ>(213, 343, 227, 332, 554, light));
-    list.push_back(std::make_shared<RectXZ>(0, 555, 0, 555, 0, white));
+        std::make_shared<RectYZ>(0.0f, 555.0f, 0.0f, 555.0f, 555.0f, red)));
+    list.push_back(
+        std::make_shared<RectYZ>(0.0f, 555.0f, 0.0f, 555.0f, 0.0f, green));
+    list.push_back(std::make_shared<RectXZ>(213.0f, 343.0f, 227.0f, 332.0f,
+                                            554.0f, light));
+    list.push_back(
+        std::make_shared<RectXZ>(0.0f, 555.0f, 0.0f, 555.0f, 0.0f, white));
     list.push_back(std::make_shared<FlippedNormals>(
-        std::make_shared<RectXZ>(0, 555, 0, 555, 555, white)));
+        std::make_shared<RectXZ>(0.0f, 555.0f, 0.0f, 555.0f, 555.0f, white)));
     list.push_back(std::make_shared<FlippedNormals>(
-        std::make_shared<RectXY>(0, 555, 0, 555, 555, white)));
+        std::make_shared<RectXY>(0.0f, 555.0f, 0.0f, 555.0f, 555.0f, white)));
     list.push_back(std::make_shared<Translate>(
         std::make_unique<RotateY>(
-            std::make_unique<Box>(Vec3(0, 0, 0), Vec3(165, 165, 165), white),
-            -18),
-        Vec3(130, 0, 65)));
+            std::make_unique<Box>(Vec3f(0.0f), Vec3f(165.0f), white), -18.0f),
+        Vec3f(130.0f, 0.0f, 65.0f)));
     list.push_back(std::make_shared<Translate>(
         std::make_unique<RotateY>(
-            std::make_unique<Box>(Vec3(0, 0, 0), Vec3(165, 330, 165), white),
-            15),
-        Vec3(265, 0, 295)));
+            std::make_unique<Box>(Vec3f(0.0f), Vec3f(165.0f, 330.0f, 165.0f),
+                                  white),
+            15.0f),
+        Vec3f(265.0f, 0.0f, 295.f)));
 
-    return make_unique<BVHNode>(list, 0, 0);
+    return make_unique<BVHNode>(list, 0.0f, 0.0f);
 }
 
 Imath::Color3f sample(Ray const& R, Hitable* world, int depth) {
@@ -85,15 +88,15 @@ Imath::Color3f sample(Ray const& R, Hitable* world, int depth) {
         }
         return emitted;
     }
-    return Imath::Color3f(0, 0, 0);
+    return Imath::Color3f(0.0f);
 }
 
 Imath::Color3f render_pixel(int x, int y, int nx, int ny, int ns, Camera& cam,
-                   Hitable* world) {
+                            Hitable* world) {
     Imath::Color3f color;
     for (int s = 0; s < ns; ++s) {
-        double u = double(x + rand_float(0.0, 1.0)) / double(nx);
-        double v = double(y + rand_float(0.0, 1.0)) / double(ny);
+        float u = float(x + rand_float(0.0, 1.0)) / float(nx);
+        float v = float(y + rand_float(0.0, 1.0)) / float(ny);
         Ray R = cam.gen_ray(u, v);
         color += sample(R, world, 0);
     }
@@ -116,15 +119,15 @@ int main(int argc, char const* argv[]) {
     int ns = 1000;
     int tile_size = 32;
 
-    Vec3 look_from(278, 278, -800);
-    Vec3 look_at(278, 278, 0);
-    Vec3 v_up(0, 1, 0);
-    double v_fov = 40.0;
-    double aspect = double(nx) / double(ny);
-    double aperture = 0.0;
-    double dist_to_focus = 10.0;
-    double start_time = 0.0;
-    double end_time = 1.0;
+    Vec3f look_from(278, 278, -800);
+    Vec3f look_at(278, 278, 0);
+    Vec3f v_up(0, 1, 0);
+    float v_fov = 40.0;
+    float aspect = float(nx) / float(ny);
+    float aperture = 0.0;
+    float dist_to_focus = 10.0;
+    float start_time = 0.0;
+    float end_time = 1.0;
 
     Camera cam(look_from, look_at, v_up, v_fov, aspect, aperture, dist_to_focus,
                start_time, end_time);
@@ -138,8 +141,8 @@ int main(int argc, char const* argv[]) {
     std::vector<Imath::Color3f> buffer(buff_size);
     std::vector<ImageTile> tiles;
 
-    int tiles_wide = ceil(double(nx) / double(tile_size));
-    int tiles_tall = ceil(double(ny) / double(tile_size));
+    int tiles_wide = ceil(float(nx) / float(tile_size));
+    int tiles_tall = ceil(float(ny) / float(tile_size));
 
     for (int j = 0; j < tiles_tall; ++j) {
         for (int i = 0; i < tiles_wide; ++i) {
@@ -186,7 +189,7 @@ int main(int argc, char const* argv[]) {
 
     std::vector<Imf::Rgba> pixels;
     for (auto const& p : buffer) {
-        pixels.push_back({ p.x, p.y, p.z, 0.0});
+        pixels.push_back({p.x, p.y, p.z, 0.0});
     }
 
     try {

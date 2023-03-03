@@ -3,7 +3,7 @@
 #include <limits>
 #include <numbers>
 
-Translate::Translate(std::shared_ptr<Hitable> ptr, Vec3 const& offset)
+Translate::Translate(std::shared_ptr<Hitable> ptr, Vec3f const& offset)
     : ptr(ptr), offset(offset) {}
 
 bool Translate::hit(Ray const& r, float t_min, float t_max,
@@ -29,10 +29,10 @@ RotateY::RotateY(std::shared_ptr<Hitable> ptr, float angle) : ptr(ptr) {
     sin_theta = sin(radians);
     cos_theta = cos(radians);
     has_box = ptr->bounding_box(0, 1, box);
-    Vec3 min(std::numeric_limits<float>::max(),
+    Vec3f min(std::numeric_limits<float>::max(),
              std::numeric_limits<float>::max(),
              std::numeric_limits<float>::max());
-    Vec3 max(-std::numeric_limits<float>::max(),
+    Vec3f max(-std::numeric_limits<float>::max(),
              -std::numeric_limits<float>::max(),
              -std::numeric_limits<float>::max());
 
@@ -45,7 +45,7 @@ RotateY::RotateY(std::shared_ptr<Hitable> ptr, float angle) : ptr(ptr) {
                 float new_x = cos_theta * x + sin_theta * z;
                 float new_z = cos_theta * z - sin_theta * x;
 
-                Vec3 tmp(new_x, y, new_z);
+                Vec3f tmp(new_x, y, new_z);
                 for (int c = 0; c < 3; ++c) {
                     if (tmp[c] > max[c]) {
                         max[c] = tmp[c];
@@ -62,8 +62,8 @@ RotateY::RotateY(std::shared_ptr<Hitable> ptr, float angle) : ptr(ptr) {
 
 bool RotateY::hit(Ray const& r, float t_min, float t_max,
                   HitRecord& rec) const {
-    Vec3 origin = r.origin;
-    Vec3 dir = r.dir;
+    Vec3f origin = r.origin;
+    Vec3f dir = r.dir;
     origin.x = cos_theta * r.origin.x - sin_theta * r.origin.z;
     origin.z = sin_theta * r.origin.x + cos_theta * r.origin.z;
     dir.x = cos_theta * r.dir.x - sin_theta * r.dir.z;
@@ -71,8 +71,8 @@ bool RotateY::hit(Ray const& r, float t_min, float t_max,
 
     Ray rotated(origin, dir, r.time);
     if (ptr->hit(rotated, t_min, t_max, rec)) {
-        Vec3 point = rec.point;
-        Vec3 normal = rec.normal;
+        Vec3f point = rec.point;
+        Vec3f normal = rec.normal;
         point.x = cos_theta * rec.point.x + sin_theta * rec.point.z;
         point.z = -sin_theta * rec.point.x + cos_theta * rec.point.z;
         normal.x = cos_theta * rec.normal.x + sin_theta * rec.normal.z;

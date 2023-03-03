@@ -5,24 +5,24 @@
 
 class Texture {
 public:
-    virtual Vec3 sample(float u, float v, Vec3 const& point) const = 0;
+    virtual Vec3f sample(float u, float v, Vec3f const& point) const = 0;
 };
 
 class ConstantTexture : public Texture {
 public:
-    ConstantTexture(Vec3 const& color);
+    ConstantTexture(Vec3f const& color);
 
-    Vec3 sample(float u, float v, Vec3 const& point) const override;
+    Vec3f sample(float u, float v, Vec3f const& point) const override;
 
 private:
-    const Vec3 color;
+    const Vec3f color;
 };
 
 class CheckerTexture : public Texture {
 public:
     CheckerTexture(Texture* odd, Texture* even);
 
-    Vec3 sample(float u, float v, Vec3 const& point) const override;
+    Vec3f sample(float u, float v, Vec3f const& point) const override;
 
 private:
     const Texture* const odd;

@@ -3,8 +3,8 @@
 #include <numbers>
 
 void get_sphere_uv(Imath::V3f const& point, float& u, float& v) {
-    double phi = atan2(point.z, point.x);
-    double theta = asin(point.y);
+    float phi = atan2(point.z, point.x);
+    float theta = asin(point.y);
     u = 1 - (phi + std::numbers::pi) / (2 * std::numbers::pi);
     v = (theta + (std::numbers::pi / 2)) / std::numbers::pi;
 }

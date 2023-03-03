@@ -18,7 +18,8 @@ add_executable(
 	"src/texture.cpp" 
 	"src/transformation.cpp"
 	"src/utility.cpp"
-	"src/loader.cpp")
+	"src/loader.cpp"
+)
 
 find_package(OpenEXR CONFIG REQUIRED)
 target_link_libraries(c3po PRIVATE OpenEXR::OpenEXR)

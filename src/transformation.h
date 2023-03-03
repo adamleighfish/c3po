@@ -6,7 +6,7 @@
 class Translate : public Hitable {
 public:
 
-    Translate(std::shared_ptr<Hitable> ptr, Vec3 const& offset);
+    Translate(std::shared_ptr<Hitable> ptr, Vec3f const& offset);
 
     bool hit(Ray const& r, float t_min, float t_max,
              HitRecord& rec) const override;
@@ -15,7 +15,7 @@ public:
 
 private:
     std::shared_ptr<Hitable> ptr;
-    Vec3 offset;
+    Vec3f offset;
 };
 
 class RotateY : public Hitable {

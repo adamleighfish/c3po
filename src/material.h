@@ -12,10 +12,10 @@ struct HitRecord;
 
 class Material {
 public:
-    virtual bool scatter(Ray const& r, HitRecord const& rec, Vec3& attenuation,
+    virtual bool scatter(Ray const& r, HitRecord const& rec, Vec3f& attenuation,
                          Ray& scattered) const = 0;
-    virtual Vec3 emit(float u, float v, Vec3 const& p) const {
-        return Vec3(0);
+    virtual Vec3f emit(float u, float v, Vec3f const& p) const {
+        return Vec3f(0);
     }
 };
 
@@ -23,7 +23,7 @@ class Lambertian : public Material {
 public:
     Lambertian(std::shared_ptr<Texture> t);
 
-    bool scatter(Ray const& r, HitRecord const& rec, Vec3& attenuation,
+    bool scatter(Ray const& r, HitRecord const& rec, Vec3f& attenuation,
                  Ray& scattered) const override;
 
 private:
@@ -34,7 +34,7 @@ class Metal : public Material {
 public:
     Metal(std::shared_ptr<Texture> t, float fuzz = 0.0);
 
-    bool scatter(Ray const& r, HitRecord const& rec, Vec3& attenuation,
+    bool scatter(Ray const& r, HitRecord const& rec, Vec3f& attenuation,
                  Ray& scattered) const override;
 
 private:
@@ -46,7 +46,7 @@ class Dielectric : public Material {
 public:
     Dielectric(float ref_idx);
 
-    bool scatter(Ray const& r, HitRecord const& rec, Vec3& attenuation,
+    bool scatter(Ray const& r, HitRecord const& rec, Vec3f& attenuation,
                  Ray& scattered) const override;
 
 private:
@@ -57,9 +57,9 @@ class DiffuseLight : public Material {
 public:
     DiffuseLight(std::shared_ptr<Texture> t);
 
-    bool scatter(Ray const& r, HitRecord const& rec, Vec3& attenuation,
+    bool scatter(Ray const& r, HitRecord const& rec, Vec3f& attenuation,
                  Ray& scattered) const override;
-    Vec3 emit(float u, float v, Vec3 const& p) const override;
+    Vec3f emit(float u, float v, Vec3f const& p) const override;
 
 private:
     std::shared_ptr<Texture> texture;
@@ -71,7 +71,7 @@ public:
 
     Isotropic(Texture* t);
 
-    bool scatter(Ray const& r, HitRecord const& rec, Vec3& attenuation,
+    bool scatter(Ray const& r, HitRecord const& rec, Vec3f& attenuation,
                  Ray& scattered) const override;
 };
 

@@ -4,23 +4,23 @@
 #include "texture.h"
 #include "utility.h"
 
-Vec3 rand_vec_in_unit_sphere() {
-    Vec3 p;
+Vec3f rand_vec_in_unit_sphere() {
+    Vec3f p;
     do {
-        p = (Vec3(rand_float(0.0, 1.0), rand_float(0.0, 1.0),
+        p = (Vec3f(rand_float(0.0, 1.0), rand_float(0.0, 1.0),
                         rand_float(0.0, 1.0)) *
              2) -
-            Vec3(1.0);
+            Vec3f(1.0);
     } while (p.length2() >= 1.0);
     return p.normalize();
 }
 
-Vec3 reflect(Vec3 const& v, Vec3 const& n) {
+Vec3f reflect(Vec3f const& v, Vec3f const& n) {
     return v - 2 * v.dot(n) * n;
 }
 
-bool refract(Vec3 const& v, Vec3 const& n, float ni_over_nt, Vec3& refracted) {
-    Vec3 uv = v.normalized();
+bool refract(Vec3f const& v, Vec3f const& n, float ni_over_nt, Vec3f& refracted) {
+    Vec3f uv = v.normalized();
     float dt = uv.dot(n);
     float discriminant = 1.0 - ni_over_nt * ni_over_nt * (1.0 - dt * dt);
     if (discriminant > 0.0) {
@@ -38,9 +38,9 @@ float schlick(float cosine, float ref_idx) {
 
 Lambertian::Lambertian(std::shared_ptr<Texture> t) : texture(t) {}
 
-bool Lambertian::scatter(Ray const& r, HitRecord const& rec, Vec3& attentuation,
+bool Lambertian::scatter(Ray const& r, HitRecord const& rec, Vec3f& attentuation,
                          Ray& scattered) const {
-    Vec3 target = rec.point + rec.normal + rand_vec_in_unit_sphere();
+    Vec3f target = rec.point + rec.normal + rand_vec_in_unit_sphere();
     scattered = Ray(rec.point, target - rec.point, r.time);
     attentuation = texture->sample(0, 0, rec.point);
     return true;
@@ -49,9 +49,9 @@ bool Lambertian::scatter(Ray const& r, HitRecord const& rec, Vec3& attentuation,
 Metal::Metal(std::shared_ptr<Texture> t, float fuzz)
     : texture(t), fuzz(fuzz) {}
 
-bool Metal::scatter(Ray const& r, HitRecord const& rec, Vec3& attenuation,
+bool Metal::scatter(Ray const& r, HitRecord const& rec, Vec3f& attenuation,
                     Ray& scattered) const {
-    Vec3 reflected = reflect(r.dir.normalized(), rec.normal);
+    Vec3f reflected = reflect(r.dir.normalized(), rec.normal);
     scattered =
         Ray(rec.point, reflected + rand_vec_in_unit_sphere() * fuzz, r.time);
     attenuation = texture->sample(0, 0, rec.point);
@@ -60,13 +60,13 @@ bool Metal::scatter(Ray const& r, HitRecord const& rec, Vec3& attenuation,
 
 Dielectric::Dielectric(float ref_idx) : ref_idx(ref_idx) {}
 
-bool Dielectric::scatter(Ray const& r, HitRecord const& rec, Vec3& attenuation,
+bool Dielectric::scatter(Ray const& r, HitRecord const& rec, Vec3f& attenuation,
                          Ray& scattered) const {
-    Vec3 outward_normal;
-    Vec3 reflected = reflect(r.dir, rec.normal);
+    Vec3f outward_normal;
+    Vec3f reflected = reflect(r.dir, rec.normal);
     float ni_over_nt;
-    attenuation = Vec3(1.0, 1.0, 1.0);
-    Vec3 refracted;
+    attenuation = Vec3f(1.0, 1.0, 1.0);
+    Vec3f refracted;
     float reflect_prob;
     float cosine;
 
@@ -99,17 +99,17 @@ bool Dielectric::scatter(Ray const& r, HitRecord const& rec, Vec3& attenuation,
 DiffuseLight::DiffuseLight(std::shared_ptr<Texture> t) : texture(t) {}
 
 bool DiffuseLight::scatter(Ray const& r, HitRecord const& rec,
-                           Vec3& attenuation, Ray& scattered) const {
+                           Vec3f& attenuation, Ray& scattered) const {
     return false;
 }
 
-Vec3 DiffuseLight::emit(float u, float v, Vec3 const& point) const {
+Vec3f DiffuseLight::emit(float u, float v, Vec3f const& point) const {
     return texture->sample(u, v, point);
 }
 
 Isotropic::Isotropic(Texture* t) : texture(t) {}
 
-bool Isotropic::scatter(Ray const& r, HitRecord const& rec, Vec3& attenuation,
+bool Isotropic::scatter(Ray const& r, HitRecord const& rec, Vec3f& attenuation,
                         Ray& scattered) const {
     scattered = Ray(rec.point, rand_vec_in_unit_sphere(), 0);
     attenuation = texture->sample(rec.u, rec.v, rec.point);

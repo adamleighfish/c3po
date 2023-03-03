@@ -23,13 +23,13 @@ bool RectXY::hit(Ray const& r, float t0, float t1, HitRecord& rec) const {
     rec.t = t;
     rec.mat_ptr = mat.get();
     rec.point = r(t);
-    rec.normal = Vec3(0, 0, 1);
+    rec.normal = Vec3f(0, 0, 1);
 
     return true;
 }
 
 bool RectXY::bounding_box(float t0, float t1, AABB& bbox) const {
-    bbox = AABB(Vec3(x0, y0, k - 0.0001), Vec3(x1, y1, k + 0.0001));
+    bbox = AABB(Vec3f(x0, y0, k - 0.0001), Vec3f(x1, y1, k + 0.0001));
     return true;
 }
 
@@ -54,12 +54,12 @@ bool RectXZ::hit(Ray const& r, float t0, float t1, HitRecord& rec) const {
     rec.t = t;
     rec.mat_ptr = mat.get();
     rec.point = r(t);
-    rec.normal = Vec3(0, 1, 0);
+    rec.normal = Vec3f(0, 1, 0);
     return true;
 }
 
 bool RectXZ::bounding_box(float t0, float t1, AABB& bbox) const {
-    bbox = AABB(Vec3(x0, k - 0.0001, z0), Vec3(x1, k + 0.0001, z1));
+    bbox = AABB(Vec3f(x0, k - 0.0001, z0), Vec3f(x1, k + 0.0001, z1));
     return true;
 }
 
@@ -84,11 +84,11 @@ bool RectYZ::hit(Ray const& r, float t0, float t1, HitRecord& rec) const {
     rec.t = t;
     rec.mat_ptr = mat.get();
     rec.point = r(t);
-    rec.normal = Vec3(1, 0, 0);
+    rec.normal = Vec3f(1, 0, 0);
     return true;
 }
 
 bool RectYZ::bounding_box(float t0, float t1, AABB& bbox) const {
-    bbox = AABB(Vec3(k - 0.0001, y0, z0), Vec3(k + 0.0001, y1, z1));
+    bbox = AABB(Vec3f(k - 0.0001, y0, z0), Vec3f(k + 0.0001, y1, z1));
     return true;
 }

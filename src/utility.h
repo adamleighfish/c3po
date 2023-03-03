@@ -4,7 +4,7 @@
 #include <cmath>
 #include <random>
 
-inline int RoundAndClamp(double x) {
+inline int RoundAndClamp(float x) {
     int min = 0;
     int max = 255;
     int raw = int(std::floor(255 * x + 0.5));
@@ -17,7 +17,7 @@ inline int RoundAndClamp(double x) {
     return raw;
 }
 
-double rand_float(double lower, double upper);
+float rand_float(float lower, float upper);
 int rand_int(int lower, int upper);
 
 #endif

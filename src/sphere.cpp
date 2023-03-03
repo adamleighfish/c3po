@@ -4,12 +4,12 @@
 
 #include <cmath>
 
-Sphere::Sphere(Vec3 const& center, float radius, Material* mat_ptr)
+Sphere::Sphere(Vec3f const& center, float radius, Material* mat_ptr)
     : center(center), radius(radius), mat_ptr(mat_ptr) {}
 
 bool Sphere::hit(Ray const& r, float t_min, float t_max,
                  HitRecord& rec) const {
-    Vec3 origin_to_center = r.origin - center;
+    Vec3f origin_to_center = r.origin - center;
     float a = r.dir.dot(r.dir);
     float b = origin_to_center.dot(r.dir);
     float c = origin_to_center.dot(origin_to_center) - radius * radius;
@@ -38,7 +38,7 @@ bool Sphere::hit(Ray const& r, float t_min, float t_max,
 }
 
 bool Sphere::bounding_box(float t0, float t1, AABB& bbox) const {
-    bbox = AABB(center - Vec3(radius, radius, radius),
-                center + Vec3(radius, radius, radius));
+    bbox = AABB(center - Vec3f(radius, radius, radius),
+                center + Vec3f(radius, radius, radius));
     return true;
 }

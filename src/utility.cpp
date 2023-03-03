@@ -1,9 +1,9 @@
 #include "utility.h"
 
-double rand_float(double lower, double upper) {
+float rand_float(float lower, float upper) {
     static thread_local std::random_device rd;
     static thread_local std::mt19937 generator(rd());
-    std::uniform_real_distribution<double> distribution(lower, upper);
+    std::uniform_real_distribution<float> distribution(lower, upper);
     return distribution(generator);
 }
 
