@@ -12,7 +12,7 @@ using Vec3f = Imath::V3f;
 using Point3f = Imath::V3f;
 using Normal3f = Imath::V3f;
 
-using Bound3f = Imath::Box3f;
+using Bounds3f = Imath::Box3f;
 
 class Ray {
 public:

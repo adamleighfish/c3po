@@ -73,7 +73,7 @@ public:
     Ray apply_r(Ray const& r) const;
 
     // Applies the transform to the bounds `b` and returns the result.
-    Bound3f apply_b(Bound3f const& b) const;
+    Bounds3f apply_b(Bounds3f const& b) const;
 
     // Transform composition.
     Transform operator*(Transform const& t) const;

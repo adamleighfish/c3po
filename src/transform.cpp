@@ -105,7 +105,7 @@ Ray Transform::apply_r(Ray const& r) const {
     return Ray(origin, dir, r.t_max, r.time);
 }
 
-Bound3f Transform::apply_b(Bound3f const& b) const {
+Bounds3f Transform::apply_b(Bounds3f const& b) const {
     return Imath::transform(b, m);
 }
 
