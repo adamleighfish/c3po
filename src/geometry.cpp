@@ -3,6 +3,8 @@
 #include <limits>
 #include <utility>
 
+Vec3f cross(Vec3f const& a, Vec3f const& b) { return b.cross(a); }
+
 float distance(Point3f const& a, Point3f const& b) {
     return std::sqrtf((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) +
                       (a.z - b.z) * (a.z - b.z));

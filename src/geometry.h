@@ -13,6 +13,14 @@ using Point3f = Imath::V3f;
 using Normal3f = Imath::V3f;
 using Bounds3f = Imath::Box3f;
 
+// Left-handed cross product
+//
+// Imath only provides right-handed cross product function for compatibility
+// with OpenGL. However, I don't care about OpenGL and most of the resources on
+// raytracing (pbrt, renderman, etc.) use a left-handed coordinate system so
+// this wrapper function takes care of that.
+Vec3f cross(Vec3f const& a, Vec3f const& b);
+
 // Returns the distance between the two points.
 float distance(Point3f const& a, Point3f const& v);
 

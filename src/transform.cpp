@@ -95,7 +95,7 @@ Vec3f Transform::apply_v(Vec3f const& v) const {
 
 Normal3f Transform::apply_n(Normal3f const& n) const {
     Normal3f res;
-    m.transposed().multDirMatrix(n, res);
+    m_inv.transposed().multDirMatrix(n, res);
     return res;
 }
 

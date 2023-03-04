@@ -32,19 +32,19 @@ public:
     // bounds.
     Bounds3f world_bounds() const;
 
-    // Attempts to intersect `ray` with this shape.
+    // Attempts to intersect ray `r` with this shape.
     //
     // If a hit occurs then returns true and records the hit location in `t_hit`
     // and the surface details in `isect`.
     //
-    // `ray` is assumed to be in world space;
-    virtual bool intersect(Ray const& ray, float& t_hit,
+    // The ray is assumed to be in world space;
+    virtual bool intersect(Ray const& r, float& t_hit,
                            SurfaceInteraction& isect) const = 0;
 
     // Returns true if `ray` intersects with this shape.
     //
-    // `ray` is assumed to be in world space;
-    virtual bool intersects(Ray const& ray) const;
+    // The ray is assumed to be in world space;
+    virtual bool intersects(Ray const& r) const;
 
     virtual float area() const = 0;
 };

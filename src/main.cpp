@@ -1,13 +1,6 @@
-#include "box.h"
-#include "bvh.h"
-#include "camera.h"
-#include "loader.h"
-#include "material.h"
-#include "rectangle.h"
+#include "interaction.h"
 #include "sphere.h"
-#include "texture.h"
-#include "transformation.h"
-#include "utility.h"
+#include "transform.h"
 
 #include "ImfRgba.h"
 #include "ImfRgbaFile.h"
@@ -15,170 +8,62 @@
 #include "Imath/ImathColor.h"
 
 #include <chrono>
-#include <execution>
-#include <fstream>
 #include <iostream>
-#include <limits>
-#include <memory>
 #include <vector>
 
-struct ImageTile {
-    int const start_x;
-    int const start_y;
-    int const end_x;
-    int const end_y;
-    int const nx;
-    int const ny;
+using Color3f = Imath::Color3f;
 
-    std::vector<Imath::Color3f>& buff;
-
-    ImageTile(int x0, int x1, int y0, int y1, int nx, int ny,
-              std::vector<Imath::Color3f>& buff)
-        : start_x(x0), end_x(x1), start_y(y0), end_y(y1), nx(nx), ny(ny),
-          buff(buff) {}
-};
-
-std::unique_ptr<Hitable> cornell_box() {
-    std::vector<std::shared_ptr<Hitable>> list;
-
-    auto red = std::make_shared<Lambertian>(
-        std::make_shared<ConstantTexture>(Vec3f(0.65f, 0.05f, 0.05f)));
-    auto white = std::make_shared<Lambertian>(
-        std::make_shared<ConstantTexture>(Vec3f(0.73f)));
-    auto green = std::make_shared<Lambertian>(
-        std::make_shared<ConstantTexture>(Vec3f(0.12f, 0.45f, 0.15f)));
-    auto light = std::make_shared<DiffuseLight>(
-        std::make_shared<ConstantTexture>(Vec3f(1.0f)));
-
-    list.push_back(std::make_shared<FlippedNormals>(
-        std::make_shared<RectYZ>(0.0f, 555.0f, 0.0f, 555.0f, 555.0f, red)));
-    list.push_back(
-        std::make_shared<RectYZ>(0.0f, 555.0f, 0.0f, 555.0f, 0.0f, green));
-    list.push_back(std::make_shared<RectXZ>(213.0f, 343.0f, 227.0f, 332.0f,
-                                            554.0f, light));
-    list.push_back(
-        std::make_shared<RectXZ>(0.0f, 555.0f, 0.0f, 555.0f, 0.0f, white));
-    list.push_back(std::make_shared<FlippedNormals>(
-        std::make_shared<RectXZ>(0.0f, 555.0f, 0.0f, 555.0f, 555.0f, white)));
-    list.push_back(std::make_shared<FlippedNormals>(
-        std::make_shared<RectXY>(0.0f, 555.0f, 0.0f, 555.0f, 555.0f, white)));
-    list.push_back(std::make_shared<Translate>(
-        std::make_unique<RotateY>(
-            std::make_unique<Box>(Vec3f(0.0f), Vec3f(165.0f), white), -18.0f),
-        Vec3f(130.0f, 0.0f, 65.0f)));
-    list.push_back(std::make_shared<Translate>(
-        std::make_unique<RotateY>(
-            std::make_unique<Box>(Vec3f(0.0f), Vec3f(165.0f, 330.0f, 165.0f),
-                                  white),
-            15.0f),
-        Vec3f(265.0f, 0.0f, 295.f)));
-
-    return make_unique<BVHNode>(list, 0.0f, 0.0f);
-}
-
-Imath::Color3f sample(Ray const& R, Hitable* world, int depth) {
-    HitRecord rec;
-    if (world->hit(R, 0.001, std::numeric_limits<float>::max(), rec)) {
-        Ray scattered;
-        Imath::Color3f attentuation;
-        Imath::Color3f emitted = rec.mat_ptr->emit(rec.u, rec.v, rec.point);
-        if (depth < 50 &&
-            rec.mat_ptr->scatter(R, rec, attentuation, scattered)) {
-            return emitted + attentuation * sample(scattered, world, depth + 1);
-        }
-        return emitted;
+Color3f ray_color(Ray const& r, Sphere const& sphere) {
+    float t_hit;
+    SurfaceInteraction isect;
+    if (sphere.intersect(r, t_hit, isect)) {
+        return 0.5f * Color3f(isect.n.x + 1.f, isect.n.y + 1.f, isect.n.z + 1.f);
     }
-    return Imath::Color3f(0.0f);
-}
 
-Imath::Color3f render_pixel(int x, int y, int nx, int ny, int ns, Camera& cam,
-                            Hitable* world) {
-    Imath::Color3f color;
-    for (int s = 0; s < ns; ++s) {
-        float u = float(x + rand_float(0.0, 1.0)) / float(nx);
-        float v = float(y + rand_float(0.0, 1.0)) / float(ny);
-        Ray R = cam.gen_ray(u, v);
-        color += sample(R, world, 0);
-    }
-    color /= ns;
-    return Imath::Color3f(sqrt(color.x), sqrt(color.y), sqrt(color.z));
-}
-
-void render_tile(ImageTile& a, Camera& cam, Hitable* world, int ns) {
-    for (int row = a.start_y; row <= a.end_y; ++row) {
-        for (int col = a.start_x; col <= a.end_x; ++col) {
-            int index = a.nx * (a.ny - row - 1) + col;
-            a.buff[index] = render_pixel(col, row, a.nx, a.ny, ns, cam, world);
-        }
-    }
+    Vec3f const unit_dir = r.dir.normalized();
+    float const t = 0.5f * (unit_dir.y + 1.f);
+    return (1.f - t) * Color3f(1.f) + t * Color3f(0.5f, 0.7f, 1.f);
 }
 
 int main(int argc, char const* argv[]) {
-    int nx = 800;
-    int ny = 800;
-    int ns = 1000;
-    int tile_size = 32;
 
-    Vec3f look_from(278, 278, -800);
-    Vec3f look_at(278, 278, 0);
-    Vec3f v_up(0, 1, 0);
-    float v_fov = 40.0;
-    float aspect = float(nx) / float(ny);
-    float aperture = 0.0;
-    float dist_to_focus = 10.0;
-    float start_time = 0.0;
-    float end_time = 1.0;
+    // image
+    float const aspect_ratio = 16.f / 9.f;
+    int const image_width = 1280;
+    int const image_height = int(image_width / aspect_ratio);
 
-    Camera cam(look_from, look_at, v_up, v_fov, aspect, aperture, dist_to_focus,
-               start_time, end_time);
-    std::unique_ptr<Hitable> world = cornell_box();
+    auto const sphere_to_world = std::make_shared<Transform>();
+    sphere_to_world->translate(Vec3f(0.f, 0.f, -1.f));
+    auto const world_to_sphere = std::make_shared<Transform>();
+    world_to_sphere->translate(Vec3f(0.f, 0.f, 1.f));
 
-    // Divide the image into tiles for rendering
-    std::cout << "Starting setup:\n";
-    auto setup_start = std::chrono::high_resolution_clock::now();
+    Sphere const sphere(sphere_to_world, world_to_sphere, false, 0.5f);
 
-    int buff_size = nx * ny;
-    std::vector<Imath::Color3f> buffer(buff_size);
-    std::vector<ImageTile> tiles;
+    // camera
+    float const viewport_height = 2.f;
+    float const viewport_width = aspect_ratio * viewport_height;
+    float focal_length = 1.f;
 
-    int tiles_wide = ceil(float(nx) / float(tile_size));
-    int tiles_tall = ceil(float(ny) / float(tile_size));
+    Point3f const origin(0.f);
+    Vec3f const horizontal(viewport_width, 0.f, 0.f);
+    Vec3f const vertical(0.f, viewport_height, 0.f);
+    Vec3f const lower_left_corner = origin - horizontal / 2.f - vertical / 2.f -
+                                    Vec3f(0.f, 0.f, focal_length);
 
-    for (int j = 0; j < tiles_tall; ++j) {
-        for (int i = 0; i < tiles_wide; ++i) {
-            int start_x = i * tile_size;
-            int start_y = j * tile_size;
-            int end_x = start_x + tile_size - 1;
-            int end_y = start_y + tile_size - 1;
-
-            if (end_x >= nx) {
-                end_x = nx - 1;
-            }
-
-            if (end_y >= ny) {
-                end_y = ny - 1;
-            }
-
-            ImageTile s(start_x, end_x, start_y, end_y, nx, ny, buffer);
-            tiles.push_back(s);
-        }
-    }
-
-    auto setup_end = std::chrono::high_resolution_clock::now();
-    std::cout << "Setup complete: "
-              << std::chrono::duration_cast<std::chrono::milliseconds>(
-                     setup_end - setup_start)
-                     .count()
-              << " ms\n";
-
-    // Render the tiles in parallel
     std::cout << "Starting render:\n";
-
     auto render_start = std::chrono::high_resolution_clock::now();
 
-    std::for_each(
-        std::execution::par, tiles.begin(), tiles.end(),
-        [&](ImageTile tile) { render_tile(tile, cam, world.get(), ns); });
+    std::vector<Color3f> buffer(image_width * image_height);
+    for (int j = image_height - 1; j >= 0; --j) {
+        for (int i = 0; i < image_width; ++i) {
+            float const u = float(i) / (image_width - 1);
+            float const v = float(j) / (image_height - 1);
+
+            Ray const r(origin, lower_left_corner + u * horizontal + v * vertical - origin);
+            int const index = image_width * (image_height - j - 1) + i;
+            buffer[index] = ray_color(r, sphere);
+        }
+    }
 
     auto render_end = std::chrono::high_resolution_clock::now();
     std::cout << "Render complete: "
@@ -193,14 +78,13 @@ int main(int argc, char const* argv[]) {
     }
 
     try {
-        Imf::RgbaOutputFile file("output.exr", nx, ny, Imf::WRITE_RGB);
-        file.setFrameBuffer(pixels.data(), 1, nx);
-        file.writePixels(ny);
+        Imf::RgbaOutputFile file("output.exr", image_width, image_height,
+                                 Imf::WRITE_RGB);
+        file.setFrameBuffer(pixels.data(), 1, image_width);
+        file.writePixels(image_height);
     } catch (std::exception const& e) {
         std::cerr << e.what() << std::endl;
     }
-
-    load_obj("../../../scenes/cube/cube.obj");
 
     return 0;
 }

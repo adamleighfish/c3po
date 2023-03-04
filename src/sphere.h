@@ -18,10 +18,10 @@ public:
 
     Bounds3f object_bounds() const override;
 
-    bool intersect(Ray const& ray, float& t_hit,
+    bool intersect(Ray const& r, float& t_hit,
                    SurfaceInteraction& isect) const override;
 
-    bool intersects(Ray const& ray) const override;
+    bool intersects(Ray const& r) const override;
     
     float area() const override;
 

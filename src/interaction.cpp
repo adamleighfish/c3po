@@ -14,8 +14,8 @@ SurfaceInteraction::SurfaceInteraction()
 SurfaceInteraction::SurfaceInteraction(Point3f const& p, Point2f const& uv,
                                        Vec3f const& wo, Vec3f const& dpdu,
                                        Vec3f const& dpdv, float time,
-                                       Shape const*)
-    : Interaction(p, dpdu.cross(dpdv).normalize(), wo, time), uv(uv),
+                                       Shape const* shape)
+    : Interaction(p, cross(dpdu, dpdv).normalize(), wo, time), uv(uv),
       dpdu(dpdu), dpdv(dpdv), shape(shape) {
 
     // Flip the normal vector if the shape has a reverse orientation or the

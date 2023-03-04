@@ -65,17 +65,17 @@ bool Sphere::intersect(Ray const& r, float& t_hit,
     // find the parametric representation of the sphere hit
     float const u = phi / float(2 * std::numbers::pi);
     float const theta = std::acosf(clamp(p_hit.z / radius, -1.f, 1.f));
-    float const v = theta / 2.f;
+    float const v = (theta - 1.f) / 2.f;
 
     // compute sphere dpdu and dpdv
     float const z_radius = std::sqrtf(p_hit.x * p_hit.x + p_hit.y * p_hit.y);
     float const inv_z_radius = 1.f / z_radius;
     float const cos_phi = p_hit.x * inv_z_radius;
     float const sin_phi = p_hit.y * inv_z_radius;
-    Vec3f const dpdu = {-2.f * float(std::numbers::pi) * p_hit.y,
-                        2.f * float(std::numbers::pi) * p_hit.x, 0.f};
-    Vec3f const dpdv = {2.f * p_hit.z * cos_phi, 2.f * p_hit.z * sin_phi,
-                        -2.f * radius * std::sinf(theta)};
+    Vec3f const dpdu(-2.f * float(std::numbers::pi) * p_hit.y,
+                        2.f * float(std::numbers::pi) * p_hit.x, 0.f);
+    Vec3f const dpdv(2.f * p_hit.z * cos_phi, 2.f * p_hit.z * sin_phi,
+                        -2.f * radius * std::sinf(theta));
 
     // initialize surface interaction from parametric information
     isect = object_to_world->apply(SurfaceInteraction(
@@ -87,9 +87,9 @@ bool Sphere::intersect(Ray const& r, float& t_hit,
     return true;
 }
 
-bool Sphere::intersects(Ray const& ray) const {
+bool Sphere::intersects(Ray const& r) const {
     // transform the ray to object space
-    Ray const r_obj = world_to_object->apply(ray);
+    Ray const ray = world_to_object->apply(r);
 
     // compute the quadratic sphere coefficients
     float const a = ray.dir.dot(ray.dir);
