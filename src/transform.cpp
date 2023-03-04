@@ -3,6 +3,8 @@
 #include "Imath/ImathBoxAlgo.h"
 #include "Imath/ImathMatrixAlgo.h"
 
+namespace c3po {
+
 Transform::Transform() = default;
 
 Transform::Transform(float const mat[4][4]) {
@@ -128,7 +130,7 @@ Transform Transform::operator*(Transform const& t) const {
                      Matrix4x4::multiply(t.m_inv, m_inv));
 }
 
-bool Transform::swaps_handedness() const { 
+bool Transform::swaps_handedness() const {
 
     const float det = m.fastMinor(0, 1, 2, 0, 1, 2);
     return det < 0.f;
@@ -141,3 +143,5 @@ bool Transform::operator==(Transform const& t) const {
 bool Transform::operator!=(Transform const& t) const {
     return (m != t.m || m_inv != t.m_inv);
 }
+
+} // namespace c3po

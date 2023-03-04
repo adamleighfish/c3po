@@ -1,10 +1,12 @@
-#ifndef c3po_transform_h
-#define c3po_transform_h
+#ifndef C3PO_TRANSFORM_H
+#define C3PO_TRANSFORM_H
 
 #include "geometry.h"
 #include "interaction.h"
 
 #include "Imath/ImathMatrix.h"
+
+namespace c3po {
 
 using Matrix4x4 = Imath::M44f;
 
@@ -93,5 +95,7 @@ private:
     Matrix4x4 m;
     Matrix4x4 m_inv;
 };
+
+} // namespace c3po
 
 #endif

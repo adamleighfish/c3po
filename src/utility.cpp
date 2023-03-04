@@ -1,5 +1,10 @@
 #include "utility.h"
 
+#include <cmath>
+#include <random>
+
+namespace c3po {
+
 float clamp(float val, float low, float high) {
     if (val < low) {
         return low;
@@ -36,7 +41,7 @@ bool quadratic(float a, float b, float c, float& t0, float& t1) {
     } else {
         q = -.5 * (double(b) + root_discim);
     }
-   
+
     t0 = q / a;
     t1 = c / q;
 
@@ -46,3 +51,5 @@ bool quadratic(float a, float b, float c, float& t0, float& t1) {
 
     return true;
 }
+
+} // namespace c3po

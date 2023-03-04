@@ -13,6 +13,8 @@
 
 using Color3f = Imath::Color3f;
 
+using namespace c3po;
+
 Color3f ray_color(Ray const& r, Sphere const& sphere) {
     float t_hit;
     SurfaceInteraction isect;

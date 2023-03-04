@@ -1,9 +1,11 @@
-#ifndef c3po_shape_h
-#define c3po_shape_h
+#ifndef C3PO_SHAPE_H
+#define C3PO_SHAPE_H
 
 #include "geometry.h"
 
 #include <memory>
+
+namespace c3po {
 
 class SurfaceInteraction;
 class Transform;
@@ -48,5 +50,7 @@ public:
 
     virtual float area() const = 0;
 };
+
+} // namespace c3po
 
 #endif

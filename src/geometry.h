@@ -1,8 +1,10 @@
-#ifndef geometry_h
-#define geometry_h
+#ifndef C3PO_GEOMETRY_H
+#define C3PO_GEOMETRY_H
 
 #include "Imath/ImathBox.h"
 #include "Imath/ImathVec.h"
+
+namespace c3po {
 
 // XXX: Just using aliases for now, may need to make thin wrapper classes in
 // the future to avoid implicit conversions.
@@ -48,5 +50,7 @@ Normal3f face_forward(Normal3f const& n, Vec3f const& v);
 // intersections that occur after it.
 bool intersect_p(Bounds3f const& bounds, Ray const& ray,
                  float* hit_t0 = nullptr, float* hit_t1 = nullptr);
+
+} // namespace c3po
 
 #endif

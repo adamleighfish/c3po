@@ -3,6 +3,8 @@
 #include <limits>
 #include <utility>
 
+namespace c3po {
+
 Vec3f cross(Vec3f const& a, Vec3f const& b) { return b.cross(a); }
 
 float distance(Point3f const& a, Point3f const& b) {
@@ -53,3 +55,5 @@ bool intersect_p(Bounds3f const& bounds, Ray const& ray, float* hit_t0,
 
     return true;
 }
+
+} // namespace c3po

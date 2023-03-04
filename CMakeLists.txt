@@ -7,22 +7,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 add_executable(
 	c3po 
 	src/main.cpp 
-	"src/aabb.cpp"
-	"src/box.cpp" 
+	"src/aggregate.cpp"
 	"src/bvh.cpp"
-	"src/camera.cpp"
 	"src/geometry.cpp"
-	"src/hitable.cpp" 
 	"src/interaction.cpp"
-	"src/material.cpp" 
-	"src/rectangle.cpp" 
 	"src/shape.cpp" 
 	"src/sphere.cpp" 
-	"src/texture.cpp" 
 	"src/transform.cpp"
-	"src/transformation.cpp"
 	"src/utility.cpp"
 	"src/loader.cpp"
+	"src/primitive.cpp"
 )
 
 find_package(OpenEXR CONFIG REQUIRED)

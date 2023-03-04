@@ -6,6 +6,8 @@
 
 #include <numbers>
 
+namespace c3po {
+
 Sphere::Sphere(std::shared_ptr<Transform> object_to_world,
                std::shared_ptr<Transform> world_to_object,
                bool reverse_orientation, float radius)
@@ -73,9 +75,9 @@ bool Sphere::intersect(Ray const& r, float& t_hit,
     float const cos_phi = p_hit.x * inv_z_radius;
     float const sin_phi = p_hit.y * inv_z_radius;
     Vec3f const dpdu(-2.f * float(std::numbers::pi) * p_hit.y,
-                        2.f * float(std::numbers::pi) * p_hit.x, 0.f);
+                     2.f * float(std::numbers::pi) * p_hit.x, 0.f);
     Vec3f const dpdv(2.f * p_hit.z * cos_phi, 2.f * p_hit.z * sin_phi,
-                        -2.f * radius * std::sinf(theta));
+                     -2.f * radius * std::sinf(theta));
 
     // initialize surface interaction from parametric information
     isect = object_to_world->apply(SurfaceInteraction(
@@ -123,3 +125,5 @@ bool Sphere::intersects(Ray const& r) const {
 float Sphere::area() const {
     return 4.f * float(std::numbers::pi) * radius * radius;
 }
+
+} // namespace c3po

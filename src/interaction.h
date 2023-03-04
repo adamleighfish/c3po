@@ -1,9 +1,13 @@
-#ifndef c3po_interaction_h
-#define c3po_interaction_h
+#ifndef C3PO_INTERACTION_H
+#define C3PO_INTERACTION_H
 
 #include "geometry.h"
 
+namespace c3po {
+
+class BSDF;
 class Shape;
+class Primitive;
 
 class Interaction {
 public:
@@ -23,11 +27,15 @@ public:
     Vec3f dpdu;
     Vec3f dpdv;
     Shape const* shape;
+    Primitive const* primitive;
+    BSDF const* bsdf;
 
     SurfaceInteraction();
     SurfaceInteraction(Point3f const& p, Point2f const& uv, Vec3f const& wo,
                        Vec3f const& dpdu, Vec3f const& dpdv, float time,
                        Shape const* = nullptr);
 };
+
+} // namespace c3po
 
 #endif

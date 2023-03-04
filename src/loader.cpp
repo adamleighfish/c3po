@@ -6,6 +6,8 @@
 #include <iostream>
 #include <vector>
 
+namespace c3po {
+
 bool load_obj(const char* filename) {
 
     std::cout << "Loading " << filename << std::endl;
@@ -28,3 +30,5 @@ bool load_obj(const char* filename) {
 
     return true;
 }
+
+} // namespace c3po

@@ -1,11 +1,13 @@
-#ifndef c3po_sphere_h
-#define c3po_sphere_h
+#ifndef C3PO_SPHERE_H
+#define C3PO_SPHERE_H
 
 #include "shape.h"
 
 #include "geometry.h"
 
 #include <memory>
+
+namespace c3po {
 
 class SurfaceInteraction;
 class Transform;
@@ -22,11 +24,13 @@ public:
                    SurfaceInteraction& isect) const override;
 
     bool intersects(Ray const& r) const override;
-    
+
     float area() const override;
 
 private:
     float const radius;
 };
+
+} // namespace c3po
 
 #endif

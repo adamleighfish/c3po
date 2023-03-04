@@ -3,6 +3,8 @@
 #include "interaction.h"
 #include "transform.h"
 
+namespace c3po {
+
 Shape::Shape(std::shared_ptr<Transform> object_to_world,
              std::shared_ptr<Transform> world_to_object,
              bool reverse_orientation)
@@ -20,3 +22,5 @@ bool Shape::intersects(Ray const& ray) const {
     SurfaceInteraction isect;
     return intersect(ray, t_hit, isect);
 }
+
+} // namespace
