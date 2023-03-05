@@ -56,4 +56,62 @@ bool intersect_p(Bounds3f const& bounds, Ray const& ray, float* hit_t0,
     return true;
 }
 
+bool intersects_p(Bounds3f const& bounds, Ray const& ray, Vec3f const& inv_dir,
+                  int const dir_is_neg[3]) {
+    float t_min =
+        ((dir_is_neg[0] ? bounds.max.x : bounds.min.x) - ray.origin.x) *
+        inv_dir.x;
+    float t_max =
+        ((dir_is_neg[0] ? bounds.min.x : bounds.max.x) - ray.origin.x) *
+        inv_dir.x;
+    float const ty_min =
+        ((dir_is_neg[1] ? bounds.max.y : bounds.min.y) - ray.origin.y) *
+        inv_dir.y;
+    float const ty_max =
+        ((dir_is_neg[1] ? bounds.min.y : bounds.max.y) - ray.origin.y) *
+        inv_dir.y;
+
+    if (t_min > ty_max || ty_min > t_max) {
+        return false;
+    }
+    t_min = std::min(t_min, ty_min);
+    t_max = std::max(t_max, ty_max);
+
+    float const tz_min =
+        ((dir_is_neg[2] ? bounds.max.z : bounds.min.z) - ray.origin.z) *
+        inv_dir.z;
+    float const tz_max =
+        ((dir_is_neg[2] ? bounds.min.z : bounds.max.z) - ray.origin.z) *
+        inv_dir.z;
+
+    if (t_min > tz_max || tz_min > t_max) {
+        return false;
+    }
+
+    t_min = std::min(t_min, tz_max);
+    t_max = std::max(t_max, tz_max);
+
+    return (t_min < ray.t_max) && (t_max > 0.f);
+}
+
+float surface_area(Bounds3f const& b) {
+    const Vec3f d = b.max - b.min;
+    return 2.f * (d.x * d.y + d.x * d.z + d.y * d.z);
+}
+
+Vec3f offset(Bounds3f const& b, Point3f const& p) {
+    Vec3f o = p - b.min;
+    if (b.max.x > b.min.x) {
+        o.x /= b.max.x - b.min.x;
+    }
+    if (b.max.y > b.min.y) {
+        o.y /= b.max.y - b.min.y;
+    }
+    if (b.max.z > b.min.z) {
+        o.z /= b.max.z - b.min.z;
+    }
+
+    return o;
+}
+
 } // namespace c3po

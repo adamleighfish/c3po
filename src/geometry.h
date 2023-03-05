@@ -51,6 +51,23 @@ Normal3f face_forward(Normal3f const& n, Vec3f const& v);
 bool intersect_p(Bounds3f const& bounds, Ray const& ray,
                  float* hit_t0 = nullptr, float* hit_t1 = nullptr);
 
+// Special intersects methods that take a precomputed `inv_dir` && `dir_is_neg`
+// values and only returns if a hit occurs.
+//
+// Used in the BVH to increase performace by ~15% according to pbrt.
+bool intersects_p(Bounds3f const& bounds, Ray const& ray, Vec3f const& inv_dir,
+                  int const dir_is_neg[3]);
+
+// Computes the surface area of the bounds `b`.
+float surface_area(Bounds3f const& b);
+
+// Returns the continuous position of the point `p` relative to the corners of
+// the bounds `b`.
+//
+// Minimum corner has the value (0, 0, 0) and the maximum corner has the value
+// (1, 1, 1)
+Vec3f offset(Bounds3f const& b, Point3f const& p);
+
 } // namespace c3po
 
 #endif

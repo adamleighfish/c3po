@@ -7,7 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 add_executable(
 	c3po 
 	src/main.cpp 
-	"src/aggregate.cpp"
 	"src/bvh.cpp"
 	"src/geometry.cpp"
 	"src/interaction.cpp"
